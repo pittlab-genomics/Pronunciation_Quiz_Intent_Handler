@@ -1,0 +1,71 @@
+service: gene-quiz-alexa-skill-intent-handler
+
+frameworkVersion: ">=1.4.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+  region: eu-west-1
+  timeout: 30
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:ListBucket"
+        - "s3:PutObject"
+        - "s3:GetObject"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - Ref: S3GeneQuizCache
+            - /*
+    - Effect: "Allow"
+      Action: 
+        - "ssm:GetParameters"
+      Resource:
+        - Fn::Join:
+          - ""
+          - - "arn:aws:ssm:*:*:parameter/"
+            - ${self:service}
+            - /*
+
+functions:
+  alexa-skill:
+    handler: src/alexa-skill.handler
+    events:
+      - alexaSkill:
+          appId: "amzn1.ask.skill.d3ba13c7-1d2a-4d76-8b6a-1c2ed64e9866"
+          enabled: true
+    environment:
+      MELVIN_CACHE_BUCKET_NAME: ${self:custom.melvinExplorerRestBaseUrl}
+
+
+plugins:
+  - serverless-plugin-aws-alerts
+  - serverless-plugin-include-dependencies
+  - serverless-prune-plugin
+package:
+  exclude:
+    - .vscode/**
+  excludeDevDependencies: false
+
+
+custom:
+  stage: ${opt:stage, self:provider.stage}
+  melvinExplorerRestBaseUrl: "https://api.dev.melvin.pittlabgenomics.com/v0.1"
+  GeneQuizCacheBucketName: ${self:service}-${self:custom.stage}
+
+  # This will delete all but the n-most recent versions of each function deployed.
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 3
+
+    
+resources:
+  Resources:
+    S3GeneQuizCache:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.GeneQuizCacheBucketName}

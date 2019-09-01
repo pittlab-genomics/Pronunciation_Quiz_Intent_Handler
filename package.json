@@ -1,0 +1,19 @@
+{
+  "name": "gene-quiz-alexa-skill-intent-handler",
+  "version": "1.0.0",
+  "description": "AWS Lambda function for Gene Quiz Alexa Skill.",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ask-sdk-core": "^2.7.0",
+    "ask-sdk-model": "^1.18.0",
+    "request": "^2.88.0",
+    "serverless-plugin-aws-alerts": "^1.4.0",
+    "ssml-builder": "^0.4.3",
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "serverless-plugin-include-dependencies": "^3.2.1",
+    "serverless-prune-plugin": "^1.4.0"
+  }
+}
