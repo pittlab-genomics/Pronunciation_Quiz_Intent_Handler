@@ -5,8 +5,10 @@ frameworkVersion: ">=1.4.0 <2.0.0"
 provider:
   name: aws
   runtime: nodejs8.10
-  stage: dev
+  stage: ${opt:stage, self:custom.defaultStage}
   region: eu-west-1
+  environment:
+    DYNAMODB_TABLE_GENE_UTTERANCES: ${self:service}-gene-utterances-${opt:stage, self:provider.stage}
   timeout: 30
   iamRoleStatements:
     - Effect: "Allow"
@@ -29,10 +31,21 @@ provider:
           - - "arn:aws:ssm:*:*:parameter/"
             - ${self:service}
             - /*
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_GENE_UTTERANCES}"
 
 functions:
   alexa-skill:
     handler: src/alexa-skill.handler
+    module: src
     events:
       - alexaSkill:
           appId: "amzn1.ask.skill.d3ba13c7-1d2a-4d76-8b6a-1c2ed64e9866"
@@ -52,9 +65,10 @@ package:
 
 
 custom:
+  defaultStage: dev
   stage: ${opt:stage, self:provider.stage}
   melvinExplorerRestBaseUrl: "https://api.dev.melvin.pittlabgenomics.com/v0.1"
-  GeneQuizCacheBucketName: ${self:service}-${self:custom.stage}
+  GeneQuizCacheBucketName: ${self:service}-gene-quiz-${self:provider.stage}
 
   # This will delete all but the n-most recent versions of each function deployed.
   prune:
@@ -69,3 +83,25 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.GeneQuizCacheBucketName}
+    DynamoDbTableGeneUtterances:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+          -  
+            AttributeName: createdAt
+            AttributeType: N
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+          -
+            AttributeName: createdAt
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE_GENE_UTTERANCES}

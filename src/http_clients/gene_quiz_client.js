@@ -1,4 +1,4 @@
-const { baseUrl } = require('../common.js');
+const { baseUrl } = require('../common/config.js');
 const request = require('request');
 
 module.exports.post_gene_utterance = function (params) {

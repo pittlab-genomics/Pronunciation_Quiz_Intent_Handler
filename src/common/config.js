@@ -5,6 +5,5 @@ module.exports = {
     },
     getBaseUrl: function () {
         return this.baseUrl;
-    },
-    quickQueryRepromptText: "Would you like to keep exploring?"
+    }
 }

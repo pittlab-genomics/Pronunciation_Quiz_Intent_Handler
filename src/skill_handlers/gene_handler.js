@@ -1,5 +1,4 @@
 const Speech = require('ssml-builder');
-const { quickQueryRepromptText } = require('../common.js');
 const { get_gene_by_name } = require('../http_clients/gene_client.js');
 var _ = require('lodash');
 
@@ -45,7 +44,6 @@ const SearchGeneIntentHandler = {
         console.log("SPEECH TEXT = " + speechText);
         return handlerInput.responseBuilder
             .speak(speechText)
-            .reprompt(quickQueryRepromptText)
             .getResponse();
     }
 };

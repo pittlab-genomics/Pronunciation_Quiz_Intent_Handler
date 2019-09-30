@@ -7,25 +7,19 @@ var _ = require('lodash');
 const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
 
 const { SearchGeneIntentHandler } = require('./skill_handlers/gene_handler.js');
-const { GeneQuizLaunchIntent, GeneQuizAnswerIntent } = require('./skill_handlers/gene_quiz_handler.js');
-const {
-    CNVAmplificationGeneIntentHandler,
-    CNVDeletionGeneIntent,
-    CNVAlterationGeneIntent
-} = require('./skill_handlers/cnv_handler.js');
-
-const { MutationCountIntentHandler } = require('./skill_handlers/mutations_handler.js');
+const { QuizIntentHandler, QuizIntentBuilder, AnswerIntentHandler } = require('./skill_handlers/gene_quiz_handler.js');
+const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speechText = 'Welcome to Melvin Explorer.'
+        let quizResponse = QuizIntentBuilder(handlerInput);
 
         return handlerInput.responseBuilder
-            .speak(speechText)
-            .reprompt(speechText)
+            .speak(quizResponse.speechText)
+            .reprompt(quizResponse.repromptText)
             .getResponse();
     }
 };
@@ -146,13 +140,10 @@ exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
         SearchGeneIntentHandler,
-        GeneQuizLaunchIntent,
-        GeneQuizAnswerIntent,
+        ImageViewerIntentHandler,
+        QuizIntentHandler,
+        AnswerIntentHandler,
         TestIntentHandler,
-        CNVAmplificationGeneIntentHandler,
-        CNVDeletionGeneIntent,
-        CNVAlterationGeneIntent,
-        MutationCountIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler,

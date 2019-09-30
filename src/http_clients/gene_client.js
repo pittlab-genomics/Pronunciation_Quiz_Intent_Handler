@@ -1,4 +1,4 @@
-const { baseUrl } = require('../common.js');
+const { baseUrl } = require('../common/config.js');
 const https = require('request');
 
 module.exports.get_gene_by_name = function (params) {
