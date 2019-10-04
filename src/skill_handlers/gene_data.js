@@ -71,7 +71,8 @@ function get_gene_list() {
     let gene_list = [];
     gene_list = gene_list_1.concat(gene_list_2, gene_list_3);
 
-    gene_list = ["STAT3", "PPARG", "BRCA2"];
+    // gene_list = ["STAT3", "PPARG", "BRCA2"];
+    // gene_list = gene_list_1;
 
     return gene_list;
 }

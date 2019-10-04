@@ -7,7 +7,12 @@ var _ = require('lodash');
 const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
 
 const { SearchGeneIntentHandler } = require('./skill_handlers/gene_handler.js');
-const { QuizIntentHandler, QuizIntentBuilder, AnswerIntentHandler } = require('./skill_handlers/gene_quiz_handler.js');
+const {
+    QuizIntentHandler,
+    QuizIntentBuilder,
+    AnswerIntentHandler,
+    UserIdentifierIntentHandler
+} = require('./skill_handlers/gene_quiz_handler.js');
 const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
 
 const LaunchRequestHandler = {
@@ -15,11 +20,14 @@ const LaunchRequestHandler = {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        let quizResponse = QuizIntentBuilder(handlerInput);
-
         return handlerInput.responseBuilder
-            .speak(quizResponse.speechText)
-            .reprompt(quizResponse.repromptText)
+            .addElicitSlotDirective('user_identifier', {
+                name: 'UserIdentifierIntent',
+                confirmationStatus: 'NONE',
+                slots: {}
+            })
+            .speak("Welcome to gene quiz. What is your identification code?")
+            .reprompt("Please provide your four-digit user identification code.")
             .getResponse();
     }
 };
@@ -139,6 +147,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     .addResponseInterceptors(ResponseLogInterceptor)
     .addRequestHandlers(
         LaunchRequestHandler,
+        UserIdentifierIntentHandler,
         SearchGeneIntentHandler,
         ImageViewerIntentHandler,
         QuizIntentHandler,
