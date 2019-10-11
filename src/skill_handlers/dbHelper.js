@@ -16,10 +16,51 @@ dbHelper.prototype.addGeneUtterance = (record) => {
         };
         docClient.put(params, (err, data) => {
             if (err) {
-                console.log(`Unable to insert => ${JSON.stringify(params)}`, err);
-                return reject("Unable to insert");
+                console.log(`Unable to insert gene utterance => ${JSON.stringify(params)}`, err);
+                return reject("Unable to insert gene utterance");
             }
-            console.log("Saved Data, ", JSON.stringify(data));
+            console.log("Saved gene utterance, ", JSON.stringify(data));
+            resolve(data);
+        });
+    });
+}
+
+dbHelper.prototype.addCancerUtterance = (record) => {
+    record['id'] = uuid.v4();
+    record['createdAt'] = new Date().getTime();
+
+    return new Promise((resolve, reject) => {
+        const params = {
+            TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+            Item: record
+        };
+        docClient.put(params, (err, data) => {
+            if (err) {
+                console.log(`Unable to insert cancer utterance => ${JSON.stringify(params)}`, err);
+                return reject("Unable to insert cancer utterance");
+            }
+            console.log("Saved cancer utterance, ", JSON.stringify(data));
+            resolve(data);
+        });
+    });
+}
+
+
+dbHelper.prototype.addExpertUtterance = (record) => {
+    record['id'] = uuid.v4();
+    record['createdAt'] = new Date().getTime();
+
+    return new Promise((resolve, reject) => {
+        const params = {
+            TableName: process.env.DYNAMODB_TABLE_EXPERT_UTTERANCES,
+            Item: record
+        };
+        docClient.put(params, (err, data) => {
+            if (err) {
+                console.log(`Unable to insert expert utterance => ${JSON.stringify(params)}`, err);
+                return reject("Unable to insert expert utterance");
+            }
+            console.log("Saved expert utterance, ", JSON.stringify(data));
             resolve(data);
         });
     });

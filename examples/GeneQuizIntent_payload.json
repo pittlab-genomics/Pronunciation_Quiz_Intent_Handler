@@ -38,7 +38,7 @@
         "timestamp": "2019-08-13T07:51:25Z",
         "locale": "en-US",
         "intent": {
-            "name": "QuizIntent",
+            "name": "GeneQuizIntent",
             "confirmationStatus": "NONE",
             "slots": {}
         }

@@ -5,29 +5,28 @@ const Speech = require('ssml-builder');
 var _ = require('lodash');
 
 const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
-
+const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
 const { SearchGeneIntentHandler } = require('./skill_handlers/gene_handler.js');
 const {
-    QuizIntentHandler,
-    QuizIntentBuilder,
+    GeneQuizIntentHandler,
+    CancerQuizIntentHandler,
     AnswerIntentHandler,
     UserIdentifierIntentHandler
-} = require('./skill_handlers/gene_quiz_handler.js');
-const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
+} = require('./skill_handlers/quiz_handler.js');
+const {
+    ExpertAnswerIntentHandler,
+    StartExpertAnswerIntentHandler
+} = require('./skill_handlers/expert_pronunciation_handler.js');
+
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
-            .addElicitSlotDirective('user_identifier', {
-                name: 'UserIdentifierIntent',
-                confirmationStatus: 'NONE',
-                slots: {}
-            })
-            .speak("Welcome to gene quiz. What is your identification code?")
-            .reprompt("Please provide your four-digit user identification code.")
+            .speak("Welcome to gene quiz. We have gene quiz and cancer quiz. Which one would you like to play?")
+            .reprompt("Which would you like to play? Gene quiz or cancer quiz.")
             .getResponse();
     }
 };
@@ -147,11 +146,18 @@ exports.handler = Alexa.SkillBuilders.custom()
     .addResponseInterceptors(ResponseLogInterceptor)
     .addRequestHandlers(
         LaunchRequestHandler,
+
         UserIdentifierIntentHandler,
+        GeneQuizIntentHandler,
+        CancerQuizIntentHandler,
+        AnswerIntentHandler,
+
         SearchGeneIntentHandler,
         ImageViewerIntentHandler,
-        QuizIntentHandler,
-        AnswerIntentHandler,
+
+        ExpertAnswerIntentHandler,
+        StartExpertAnswerIntentHandler,
+
         TestIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,

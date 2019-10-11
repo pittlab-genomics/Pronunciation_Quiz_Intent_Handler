@@ -5,8 +5,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "ask-sdk": "^2.7.0",
     "ask-sdk-core": "^2.7.0",
-    "ask-sdk-model": "^1.18.0",
+    "ask-sdk-model": "^1.19.0",
     "request": "^2.88.0",
     "serverless-plugin-aws-alerts": "^1.4.0",
     "ssml-builder": "^0.4.3",

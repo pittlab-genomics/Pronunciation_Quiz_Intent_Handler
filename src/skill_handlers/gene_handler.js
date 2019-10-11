@@ -11,7 +11,7 @@ const SearchGeneIntentHandler = {
 
         let gene_name = _.get(handlerInput, 'requestEnvelope.request.intent.slots.gene.value');
         if (_.isNil(gene_name)) {
-            gene_name = _.get(handlerInput, 'requestEnvelope.request.intent.slots.query.value').replace(/\s/g, '');;
+            gene_name = _.get(handlerInput, 'requestEnvelope.request.intent.slots.gene_query.value').replace(/\s/g, '');;
         }
 
         let speechText = '';
