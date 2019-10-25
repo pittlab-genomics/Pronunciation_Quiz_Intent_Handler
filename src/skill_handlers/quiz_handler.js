@@ -124,21 +124,19 @@ const AnswerIntentHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         const responseBuilder = handlerInput.responseBuilder;
         const quiz = _.get(sessionAttributes, 'quiz');
-        let response = {};
         console.error(`[AnswerIntentHandler] quiz: ${JSON.stringify(quiz)}`);
 
         if (quiz === 'GENE_QUIZ') {
-            response = await process_gene_quiz_answer(handlerInput);
+            await process_gene_quiz_answer(handlerInput);
 
         } else if (quiz === 'CANCER_QUIZ') {
-            response = await process_cancer_quiz_answer(handlerInput);
+            await process_cancer_quiz_answer(handlerInput);
 
         } else {
             console.error(`Session attribute quiz is not set: ${JSON.stringify(requestEnvelope)}`);
             return handlerInput.responseBuilder
                 .speak("Please start a quiz first.");
         }
-        console.info(`[AnswerIntentHandler] response = ${JSON.stringify(response)}`);
         return responseBuilder.getResponse();
     }
 };

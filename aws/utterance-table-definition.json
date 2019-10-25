@@ -1,0 +1,23 @@
+{
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "user_id",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "createdAt",
+      "AttributeType": "N"
+    }
+  ],
+  "TableName": "_MELVIN_DYNAMODB_TABLE_NAME",
+  "KeySchema": [
+    {
+      "KeyType": "HASH",
+      "AttributeName": "user_id"
+    },
+    {
+      "KeyType": "RANGE",
+      "AttributeName": "createdAt"
+    }
+  ]
+}
