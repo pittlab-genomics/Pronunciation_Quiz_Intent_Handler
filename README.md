@@ -15,6 +15,12 @@ In order to deploy the endpoint simply run
 serverless deploy
 ```
 
+## Test Configuration
+sls print -s dev
+
+## Deploy to UAT
+sls deploy -s uat
+
 ## Test Locally
 
 serverless invoke local --function alexa-skill -p ./examples/GeneQuizIntent_payload.json

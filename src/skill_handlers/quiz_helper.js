@@ -1,6 +1,6 @@
 const Speech = require('ssml-builder');
 var _ = require('lodash');
-const gene_data = require("./gene_data.js");
+const gene_data = require("./gene_data_1.js");
 const cancer_data = require("./cancer_data.js");
 const { supportsAPL, getSlotValues } = require("../common/util.js")
 const dbHelper = require('./dbHelper.js');

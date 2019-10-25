@@ -1,8 +1,8 @@
-const { baseUrl } = require('../common/config.js');
+const { melvin_endpoint } = require('../common/config.js');
 const https = require('request');
 
 module.exports.get_gene_by_name = function (params) {
-    var url = baseUrl + '/gene/' + params.gene_name;
+    var url = melvin_endpoint + '/gene/' + params.gene_name;
     var options = { json: true };
 
     return new Promise(function (resolve, reject) {

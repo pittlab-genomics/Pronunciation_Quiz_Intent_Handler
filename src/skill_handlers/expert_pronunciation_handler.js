@@ -21,12 +21,12 @@ const ExpertAnswerIntentHandler = {
         //         .getResponse();
         // }
 
-        if (!request.dialogState || request.dialogState !== 'COMPLETED') {
-            console.error(`Invalid state in ExpertAnswerIntentHandler | request: ${JSON.stringify(request)}`);
-            return responseBuilder
-                .speak("Please start the expert pronunciation flow first. Bye.")
-                .getResponse();
-        }
+        // if (!request.dialogState || request.dialogState !== 'COMPLETED') {
+        //     console.error(`Invalid state in ExpertAnswerIntentHandler | request: ${JSON.stringify(request)}`);
+        //     return responseBuilder
+        //         .speak("Please start the expert pronunciation flow first. Bye.")
+        //         .getResponse();
+        // }
 
         if (_.isEmpty(expert_utterance)) {
             console.error(`Slot value for expert not found | request: ${JSON.stringify(request)}`);

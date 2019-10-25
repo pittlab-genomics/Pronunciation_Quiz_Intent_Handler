@@ -4,35 +4,17 @@ frameworkVersion: ">=1.4.0 <2.0.0"
 
 provider:
   name: aws
-  runtime: nodejs8.10
-  stage: ${opt:stage, self:custom.defaultStage}
+  runtime: nodejs10.x
+  stage: ${self:custom.stage}
   region: eu-west-1
-  environment:
-    DYNAMODB_TABLE_GENE_UTTERANCES: ${self:service}-gene-utterances-${opt:stage, self:provider.stage}
-    DYNAMODB_TABLE_CANCER_UTTERANCES: ${self:service}-cancer-utterances-${opt:stage, self:provider.stage}
-    DYNAMODB_TABLE_EXPERT_UTTERANCES: ${self:service}-expert-utterances-${opt:stage, self:provider.stage}
+  environment: ${self:custom.config.environment}
   timeout: 30
   iamRoleStatements:
-    - Effect: "Allow"
+    - Effect: Allow
       Action:
-        - "s3:ListBucket"
-        - "s3:PutObject"
-        - "s3:GetObject"
-      Resource:
-        Fn::Join:
-          - ""
-          - - "arn:aws:s3:::"
-            - Ref: S3GeneQuizCache
-            - /*
-    - Effect: "Allow"
-      Action: 
-        - "ssm:GetParameters"
-      Resource:
-        - Fn::Join:
-          - ""
-          - - "arn:aws:ssm:*:*:parameter/"
-            - ${self:service}
-            - /*
+        - ssm:GetParameters
+      Resource: "arn:aws:ssm:*:*:parameter/${self:service}/*"
+
     - Effect: Allow
       Action:
         - dynamodb:DescribeTable
@@ -42,7 +24,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_GENE_UTTERANCES}"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_GENE_UTTERANCES}"
+
     - Effect: Allow
       Action:
         - dynamodb:DescribeTable
@@ -52,7 +35,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_CANCER_UTTERANCES}"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_CANCER_UTTERANCES}"
+
     - Effect: Allow
       Action:
         - dynamodb:DescribeTable
@@ -62,7 +46,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_EXPERT_UTTERANCES}"
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_EXPERT_UTTERANCES}"
 
 functions:
   alexa-skill:
@@ -70,104 +54,33 @@ functions:
     module: src
     events:
       - alexaSkill:
-          appId: "amzn1.ask.skill.d3ba13c7-1d2a-4d76-8b6a-1c2ed64e9866"
+          appId: ${self:custom.config.alexa.appId}
           enabled: true
-    environment:
-      MELVIN_CACHE_BUCKET_NAME: ${self:custom.melvinExplorerRestBaseUrl}
-
 
 plugins:
   - serverless-plugin-aws-alerts
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
-package:
-  exclude:
-    - .vscode/**
-  excludeDevDependencies: false
 
+package:
+  individually: false
+  excludeDevDependencies: false
+  include:
+    - "!./**"
+    - "./src/**"
+  exclude:
+    - "**"
 
 custom:
-  defaultStage: dev
-  stage: ${opt:stage, self:provider.stage}
-  melvinExplorerRestBaseUrl: "https://api.dev.melvin.pittlabgenomics.com/v0.1"
-  GeneQuizCacheBucketName: ${self:service}-gene-quiz-${self:provider.stage}
+  # Our stage is based on what is passed in when running serverless
+  # commands. Or fallsback to what we have set in the provider section.
+  stage: ${opt:stage, 'dev'}
+
+  # Load our configuration file specific to the environment based on the stage parameter
+  config: ${file(config/${self:provider.stage}.yml)}
 
   # This will delete all but the n-most recent versions of each function deployed.
   prune:
     automatic: true
     includeLayers: true
     number: 3
-
-    
-resources:
-  Resources:
-    S3GeneQuizCache:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${self:custom.GeneQuizCacheBucketName}
-    DynamoDbTableGeneUtterances:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-          -  
-            AttributeName: createdAt
-            AttributeType: N
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-          -
-            AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE_GENE_UTTERANCES}
-    DynamoDbTableCancerUtterances:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-          -  
-            AttributeName: createdAt
-            AttributeType: N
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-          -
-            AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE_CANCER_UTTERANCES}
-    DynamoDbTableExpertUtterances:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: id
-            AttributeType: S
-          -  
-            AttributeName: createdAt
-            AttributeType: N
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-          -
-            AttributeName: createdAt
-            KeyType: RANGE
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE_EXPERT_UTTERANCES}
