@@ -85,26 +85,24 @@ async function get_gene_list(user_code) {
     gene_utterances.forEach(function (item) {
         let gene_name = item['gene_name'];
         if (_.isNil(utterances_dict[gene_name])) {
-            utterances_dict[gene_name]++;
-        } else {
-            utterances_dict[gene_name] = 1;
+            utterances_dict[gene_name] = 0;
         }
+        utterances_dict[gene_name]++;
     });
-    // console.log(`utterances_dict: ${JSON.stringify(utterances_dict)}`);
 
-    // Create items array for sorting
-    let items = Object.keys(utterances_dict).map(function (key) {
+    // Create utterances_items out of utterances_dict array for sorting
+    let utterances_items = Object.keys(utterances_dict).map(function (key) {
         return [key, utterances_dict[key]];
     });
 
     // Sort the array based on the second element
-    items.sort(function (first, second) {
+    utterances_items.sort(function (first, second) {
         return second[1] - first[1];
     });
 
     // Create a new array with only the first N items
-    let most_recorded_items = items.slice(0, 60);
-    // console.log(`most_recorded_items: ${JSON.stringify(most_recorded_items)}`);
+    let most_recorded_items = utterances_items.slice(0, 60);
+    console.log(`[get_gene_list] most_recorded_items: ${JSON.stringify(most_recorded_items)}`);
 
     // filter out genes that already have high number of utterances recorded
     let filtered_gene_list = gene_list_top_723.filter((top_gene) =>
