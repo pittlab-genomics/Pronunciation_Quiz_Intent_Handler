@@ -8,7 +8,7 @@ region="eu-west-1"
 
 dir="${BASH_SOURCE%/*}"
 
-service_name="gene-quiz-alexa-skill-intent-handler"
+service_name="quiz"
 
 declare -a table_list=(
                 "gene-utterances"

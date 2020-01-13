@@ -49,9 +49,16 @@ const cancer_quiz_response_builder = function (handlerInput) {
 }
 
 
-const gene_quiz_response_builder = function (handlerInput) {
+const gene_quiz_response_builder = async function (handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
+    const user_code = sessionAttributes['user_code'];
+
+    if (_.isNil(user_code)) {
+        console.error(`Invalid state in gene_quiz_response_builder: handlerInput: ${JSON.stringify(handlerInput)}`);
+        return responseBuilder
+            .speak("Something went wrong while retrieving the quiz card. Please try again.");
+    }
 
     const promptText = "How would you pronounce this gene?";
     const repromptText = "Please pronounce the gene name on the screen.";
@@ -59,7 +66,7 @@ const gene_quiz_response_builder = function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        let gene_list = gene_data.get_gene_list();
+        let gene_list = await gene_data.get_gene_list(user_code);
         sessionAttributes['gene_list'] = gene_list;
     }
 
@@ -92,15 +99,16 @@ const gene_quiz_response_builder = function (handlerInput) {
     return quizResponse;
 }
 
-const process_gene_quiz_answer = async function (handlerInput) {
+const process_gene_quiz_answer = function (handlerInput) {
     const speech = new Speech();
     const responseBuilder = handlerInput.responseBuilder;
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const gene_quiz_item = _.get(sessionAttributes, 'gene_quiz_item');
     const remaining_genes = _.get(sessionAttributes, 'gene_list');
-    const user_identifier = _.get(sessionAttributes, 'user_identifier');
+    const user_code = _.get(sessionAttributes, 'user_code');
 
-    if (_.isNil(gene_quiz_item) || _.isNil(remaining_genes) || !Array.isArray(remaining_genes)) {
+    if (_.isNil(gene_quiz_item) || _.isNil(remaining_genes)
+        || !Array.isArray(remaining_genes || _.isNil(user_code))) {
         console.error(`Invalid state in AnswerIntentHandler: gene_quiz_item: ${gene_quiz_item},
             remaining_genes: ${remaining_genes}`);
         return responseBuilder
@@ -109,26 +117,28 @@ const process_gene_quiz_answer = async function (handlerInput) {
 
     let gene_name_utterance = _.get(handlerInput, 'requestEnvelope.request.intent.slots.quiz_answer_query.value');
     if (_.isNil(gene_name_utterance)) {
-        console.error(`Slot value for quiz_answer_query not found: ${JSON.stringify(requestEnvelope.request)}`);
+        console.error(`Slot value for quiz_answer_query not found: 
+        ${JSON.stringify(handlerInput.requestEnvelope.request)}`);
         return responseBuilder
             .speak("Sorry, I could not understand what you said. Please try again.")
             .reprompt("Please pronounce the gene name on the screen");
     }
 
     let params = {
+        'user_code': user_code,
         'gene_name': gene_quiz_item,
         'utterance': gene_name_utterance,
         'device_id': _.get(handlerInput, 'requestEnvelope.context.System.device.deviceId'),
         'user_id': _.get(handlerInput, 'requestEnvelope.context.System.user.userId'),
         'session_id': _.get(handlerInput, 'requestEnvelope.session.sessionId'),
         'request_id': _.get(handlerInput, 'requestEnvelope.request.requestId'),
-        'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp'),
-        'user_identifier': user_identifier
+        'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
     return dbHelper.addGeneUtterance(params)
-        .then((data) => {
-            console.log(`Gene utterance saved: ${params} | ${remaining_genes}`);
+        .then(async (data) => {
+            console.log(`Gene utterance saved: ${JSON.stringify(params)} | ${remaining_genes}
+            | data: ${JSON.stringify(data)}`);
 
             if (remaining_genes.length == 0) {
                 console.log("Gene quiz ended.");
@@ -139,7 +149,7 @@ const process_gene_quiz_answer = async function (handlerInput) {
                     .speak(speechText);
 
             } else {
-                let quizResponse = gene_quiz_response_builder(handlerInput);
+                let quizResponse = await gene_quiz_response_builder(handlerInput);
                 speech.say("Okay!");
                 speech.pause('500ms');
                 speech.sayWithSSML(quizResponse.speechText);
@@ -166,7 +176,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const cancer_quiz_item = _.get(sessionAttributes, 'cancer_quiz_item');
     const remaining_cancers = _.get(sessionAttributes, 'cancer_list');
-    const user_identifier = _.get(sessionAttributes, 'user_identifier');
+    const user_code = _.get(sessionAttributes, 'user_code');
 
     if (_.isNil(cancer_quiz_item) || _.isNil(remaining_cancers) || !Array.isArray(remaining_cancers)) {
         console.error(`Invalid state in AnswerIntentHandler: cancer_quiz_item: ${cancer_quiz_item},
@@ -184,14 +194,14 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     }
 
     let params = {
+        'user_code': user_code,
         'cancer_name': cancer_quiz_item,
         'utterance': cancer_name_utterance,
         'device_id': _.get(handlerInput, 'requestEnvelope.context.System.device.deviceId'),
         'user_id': _.get(handlerInput, 'requestEnvelope.context.System.user.userId'),
         'session_id': _.get(handlerInput, 'requestEnvelope.session.sessionId'),
         'request_id': _.get(handlerInput, 'requestEnvelope.request.requestId'),
-        'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp'),
-        'user_identifier': user_identifier
+        'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
     return dbHelper.addCancerUtterance(params)
@@ -204,8 +214,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
                 responseBuilder.withShouldEndSession(true);
                 speech.say("Thank you for taking the cancer quiz. Bye!");
                 const speechText = speech.ssml();
-                return responseBuilder
-                    .speak(speechText);
+                return responseBuilder.speak(speechText);
 
             } else {
                 let quizResponse = cancer_quiz_response_builder(handlerInput);
