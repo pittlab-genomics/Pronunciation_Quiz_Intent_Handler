@@ -1,8 +1,8 @@
 {
   "AttributeDefinitions": [
     {
-      "AttributeName": "user_id",
-      "AttributeType": "S"
+      "AttributeName": "user_code",
+      "AttributeType": "N"
     },
     {
       "AttributeName": "createdAt",
@@ -13,7 +13,7 @@
   "KeySchema": [
     {
       "KeyType": "HASH",
-      "AttributeName": "user_id"
+      "AttributeName": "user_code"
     },
     {
       "KeyType": "RANGE",

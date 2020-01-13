@@ -6,7 +6,6 @@ var dbHelper = function () { };
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 dbHelper.prototype.addGeneUtterance = (record) => {
-    record['id'] = uuid.v4();
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -19,14 +18,14 @@ dbHelper.prototype.addGeneUtterance = (record) => {
                 console.log(`Unable to insert gene utterance => ${JSON.stringify(params)}`, err);
                 return reject("Unable to insert gene utterance");
             }
-            console.log("Saved gene utterance, ", JSON.stringify(data));
+            console.log(`Saved gene utterance: ${JSON.stringify(data)} | 
+            TableName: ${process.env.DYNAMODB_TABLE_GENE_UTTERANCES}`);
             resolve(data);
         });
     });
 }
 
 dbHelper.prototype.addCancerUtterance = (record) => {
-    record['id'] = uuid.v4();
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -47,7 +46,6 @@ dbHelper.prototype.addCancerUtterance = (record) => {
 
 
 dbHelper.prototype.addExpertUtterance = (record) => {
-    record['id'] = uuid.v4();
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -64,6 +62,39 @@ dbHelper.prototype.addExpertUtterance = (record) => {
             resolve(data);
         });
     });
+}
+
+dbHelper.prototype.getAllGeneUtterances = async (user_code) => {
+    let allData = [];
+    console.log(`Querying all gene utterances for user_code: ${user_code}`);
+    var params = {
+        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        KeyConditionExpression: "#user_code = :ucode",
+        ExpressionAttributeNames: {
+            "#user_code": "user_code"
+        },
+        ExpressionAttributeValues: {
+            ":ucode": user_code
+        }
+    };
+
+    let hasMorePages = true;
+    do {
+        let data = await docClient.query(params).promise();
+
+        if (data['Items'].length > 0) {
+            allData = [...allData, ...data['Items']];
+        }
+
+        if (data.LastEvaluatedKey) {
+            hasMorePages = true;
+            params.ExclusiveStartKey = data.LastEvaluatedKey;
+        } else {
+            hasMorePages = false;
+        }
+    } while (hasMorePages);
+
+    return allData;
 }
 
 module.exports = new dbHelper();

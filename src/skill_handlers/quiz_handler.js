@@ -14,14 +14,14 @@ const UserIdentifierIntentHandler = {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest'
             && handlerInput.requestEnvelope.request.intent.name === 'UserIdentifierIntent';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         const request = handlerInput.requestEnvelope.request;
         const responseBuilder = handlerInput.responseBuilder;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        const user_identifier = _.get(sessionAttributes, 'user_identifier');
-        console.info(`[UserIdentifierIntentHandler] user_identifier: ${user_identifier}`);
+        const user_code = _.get(sessionAttributes, 'user_code');
+        console.info(`[UserIdentifierIntentHandler] user_code: ${user_code}`);
 
-        if (!_.isEmpty(user_identifier)) { // check whether a session has already started
+        if (!_.isEmpty(user_code)) { // check whether a session has already started
             return responseBuilder
                 .speak("Gene quiz has already started.")
                 .getResponse();
@@ -42,12 +42,12 @@ const UserIdentifierIntentHandler = {
         let quizResponse = {};
 
         if (slotValues.user_identifier.heardAs && quiz) {
-            const user_identifier = slotValues.user_identifier.heardAs;
-            sessionAttributes['user_identifier'] = user_identifier;
+            const user_code = slotValues.user_identifier.heardAs;
+            sessionAttributes['user_code'] = parseInt(user_code, 10);
             handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
             if (quiz === 'GENE_QUIZ') {
-                quizResponse = gene_quiz_response_builder(handlerInput);
+                quizResponse = await gene_quiz_response_builder(handlerInput);
 
             } else if (quiz === 'CANCER_QUIZ') {
                 quizResponse = cancer_quiz_response_builder(handlerInput);
