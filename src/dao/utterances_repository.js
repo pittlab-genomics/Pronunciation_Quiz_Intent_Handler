@@ -2,10 +2,10 @@ var AWS = require("aws-sdk");
 AWS.config.update({ region: "eu-west-1" });
 const uuid = require('uuid');
 
-var dbHelper = function () { };
+var utterances_repository = function () { };
 var docClient = new AWS.DynamoDB.DocumentClient();
 
-dbHelper.prototype.addGeneUtterance = (record) => {
+utterances_repository.prototype.addGeneUtterance = (record) => {
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -25,7 +25,7 @@ dbHelper.prototype.addGeneUtterance = (record) => {
     });
 }
 
-dbHelper.prototype.addCancerUtterance = (record) => {
+utterances_repository.prototype.addCancerUtterance = (record) => {
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -45,7 +45,7 @@ dbHelper.prototype.addCancerUtterance = (record) => {
 }
 
 
-dbHelper.prototype.addExpertUtterance = (record) => {
+utterances_repository.prototype.addExpertUtterance = (record) => {
     record['createdAt'] = new Date().getTime();
 
     return new Promise((resolve, reject) => {
@@ -64,7 +64,7 @@ dbHelper.prototype.addExpertUtterance = (record) => {
     });
 }
 
-dbHelper.prototype.getAllGeneUtterances = async (user_code) => {
+utterances_repository.prototype.getAllGeneUtterances = async (user_code) => {
     let allData = [];
     console.log(`Querying all gene utterances for user_code: ${user_code}`);
     var params = {
@@ -97,4 +97,4 @@ dbHelper.prototype.getAllGeneUtterances = async (user_code) => {
     return allData;
 }
 
-module.exports = new dbHelper();
+module.exports = new utterances_repository();

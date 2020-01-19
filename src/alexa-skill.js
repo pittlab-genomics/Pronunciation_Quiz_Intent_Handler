@@ -1,12 +1,11 @@
 'use strict';
 
 const Alexa = require('ask-sdk-core');
-const Speech = require('ssml-builder');
 var _ = require('lodash');
 
 const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
 const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
-const { SearchGeneIntentHandler } = require('./skill_handlers/gene_handler.js');
+const { SearchGeneIntentHandler } = require('./skill_handlers/searchgene_handler.js');
 const {
     GeneQuizIntentHandler,
     CancerQuizIntentHandler,

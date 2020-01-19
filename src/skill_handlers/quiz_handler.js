@@ -1,4 +1,3 @@
-const Speech = require('ssml-builder');
 var _ = require('lodash');
 const {
     gene_quiz_response_builder,
@@ -18,10 +17,10 @@ const UserIdentifierIntentHandler = {
         const request = handlerInput.requestEnvelope.request;
         const responseBuilder = handlerInput.responseBuilder;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        const user_code = _.get(sessionAttributes, 'user_code');
-        console.info(`[UserIdentifierIntentHandler] user_code: ${user_code}`);
+        const user_code = _.get(sessionAttributes, 'user_code');        
 
         if (!_.isEmpty(user_code)) { // check whether a session has already started
+            console.info(`[UserIdentifierIntentHandler] quiz already started | user_code: ${user_code}`);
             return responseBuilder
                 .speak("Gene quiz has already started.")
                 .getResponse();

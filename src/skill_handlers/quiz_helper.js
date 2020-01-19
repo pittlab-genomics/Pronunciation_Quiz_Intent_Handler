@@ -1,9 +1,9 @@
 const Speech = require('ssml-builder');
 var _ = require('lodash');
-const gene_data = require("./gene_data_1.js");
-const cancer_data = require("./cancer_data.js");
-const { supportsAPL, getSlotValues } = require("../common/util.js")
-const dbHelper = require('./dbHelper.js');
+const genes_repository = require("../dao/genes_repository");
+const cancer_repository = require("../dao/cancer_repository.js");
+const { supportsAPL } = require("../common/util.js")
+const utterances_repository = require('../dao/utterances_repository.js');
 
 const cancer_quiz_response_builder = function (handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -15,7 +15,7 @@ const cancer_quiz_response_builder = function (handlerInput) {
     let quizResponse = {};
 
     if (!('cancer_list' in sessionAttributes)) {
-        let cancer_list = cancer_data.get_cancer_list();
+        let cancer_list = cancer_repository.get_cancer_list();
         sessionAttributes['cancer_list'] = cancer_list;
     }
 
@@ -66,7 +66,10 @@ const gene_quiz_response_builder = async function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        let gene_list = await gene_data.get_gene_list(user_code);
+        const gene_utterances = await utterances_repository.getAllGeneUtterances(user_code);
+        console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
+            + ` gene_utterances len: ${gene_utterances.length}`);
+        let gene_list = await genes_repository.get_gene_list(gene_utterances);
         sessionAttributes['gene_list'] = gene_list;
     }
 
@@ -135,7 +138,7 @@ const process_gene_quiz_answer = function (handlerInput) {
         'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
-    return dbHelper.addGeneUtterance(params)
+    return utterances_repository.addGeneUtterance(params)
         .then(async (data) => {
             console.log(`Gene utterance saved: ${JSON.stringify(params)} | ${remaining_genes}
             | data: ${JSON.stringify(data)}`);
@@ -204,7 +207,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
         'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
-    return dbHelper.addCancerUtterance(params)
+    return utterances_repository.addCancerUtterance(params)
         .then((data) => {
             console.log('Cancer utterance saved: ', params);
             console.log(`Inside addCancerUtterance | remaining_cancers: ${remaining_cancers}`);
