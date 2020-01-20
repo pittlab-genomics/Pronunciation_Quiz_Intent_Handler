@@ -1,7 +1,7 @@
 const Alexa = require('ask-sdk-core');
 const Speech = require('ssml-builder');
 var _ = require('lodash');
-const dbHelper = require('./dbHelper.js');
+const utterances_repository = require('../dao/utterances_repository.js');
 
 const ExpertAnswerIntentHandler = {
     canHandle(handlerInput) {
@@ -45,7 +45,7 @@ const ExpertAnswerIntentHandler = {
             'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
         };
 
-        return dbHelper.addExpertUtterance(params)
+        return utterances_repository.addExpertUtterance(params)
             .then((data) => {
                 console.log('Expert utterance saved: ', params);
                 speech.say("Okay!");
@@ -68,7 +68,7 @@ const ExpertAnswerIntentHandler = {
 const StartExpertAnswerIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'StartExpertAnswerIntent';
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ExpertQuizIntent';
     },
     handle(handlerInput) {
         console.log("[StartExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));

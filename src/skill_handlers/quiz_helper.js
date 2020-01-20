@@ -1,52 +1,13 @@
 const Speech = require('ssml-builder');
 var _ = require('lodash');
-const gene_data = require("./gene_data_1.js");
-const cancer_data = require("./cancer_data.js");
-const { supportsAPL, getSlotValues } = require("../common/util.js")
-const dbHelper = require('./dbHelper.js');
+const genes_repository = require("../dao/genes_repository");
+const cancer_repository = require("../dao/cancer_repository.js");
+const { supportsAPL } = require("../common/util.js")
+const utterances_repository = require('../dao/utterances_repository.js');
 
-const cancer_quiz_response_builder = function (handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const responseBuilder = handlerInput.responseBuilder;
-
-    let promptText = "How would you pronounce this cancer name?";
-    let repromptText = "Please pronounce the cancer name on the screen.";
-    let speech = new Speech();
-    let quizResponse = {};
-
-    if (!('cancer_list' in sessionAttributes)) {
-        let cancer_list = cancer_data.get_cancer_list();
-        sessionAttributes['cancer_list'] = cancer_list;
-    }
-
-    const remaining_cancers = sessionAttributes['cancer_list'];
-    if (remaining_cancers.length == 0) {
-        console.error(`Invalid state in CancerQuiz | remaining_cancers: ${remaining_cancers}`);
-        responseBuilder.withShouldEndSession(true);
-        quizResponse = {
-            "speechText": "Something went wrong while loading the cancer list from the session. Please try again.",
-            "repromptText": ""
-        };
-
-    } else {
-        const cancer_quiz_item = remaining_cancers.shift();
-        console.log(`Inside CancerQuiz | remaining_cancers: ${remaining_cancers},` +
-            `cancer_quiz_item: ${cancer_quiz_item}`);
-        sessionAttributes['cancer_quiz_item'] = cancer_quiz_item;
-        speech.say(promptText);
-        if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
-            speech.pause('1s');
-        }
-        responseBuilder.withSimpleCard('Cancer Quiz', cancer_quiz_item);
-        speechText = speech.ssml(true);
-        quizResponse = {
-            "speechText": speechText,
-            "repromptText": repromptText
-        };
-    }
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-    return quizResponse;
-}
+const APLDocs = {
+    quiz_card: require('../../resources/APL/quiz_card.json'),
+};
 
 
 const gene_quiz_response_builder = async function (handlerInput) {
@@ -66,7 +27,10 @@ const gene_quiz_response_builder = async function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        let gene_list = await gene_data.get_gene_list(user_code);
+        const gene_utterances = await utterances_repository.getAllGeneUtterances(user_code);
+        console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
+            + ` gene_utterances len: ${gene_utterances.length}`);
+        let gene_list = await genes_repository.get_gene_list(gene_utterances);
         sessionAttributes['gene_list'] = gene_list;
     }
 
@@ -85,10 +49,28 @@ const gene_quiz_response_builder = async function (handlerInput) {
             `gene_quiz_item: ${gene_quiz_item}`);
         sessionAttributes['gene_quiz_item'] = gene_quiz_item;
         speech.say(promptText);
+
         if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
             speech.pause('1s');
+            responseBuilder.withSimpleCard(`Gene Quiz | UID - ${user_code}`, gene_quiz_item);
+
+        } else {
+            let footer_text = `User ID - ${user_code}`;
+            handlerInput.responseBuilder.addDirective({
+                type: 'Alexa.Presentation.APL.RenderDocument',
+                token: 'pagerToken',
+                version: '1.0',
+                document: APLDocs.quiz_card,
+                datasources: {
+                    'templateData': {
+                        'title': 'Gene Quiz',
+                        'quiz_item': gene_quiz_item,
+                        'footer_text': footer_text
+                    },
+                },
+            });
         }
-        responseBuilder.withSimpleCard('Gene Quiz', gene_quiz_item);
+
         quizResponse = {
             "speechText": speech.ssml(true),
             "repromptText": repromptText
@@ -107,8 +89,10 @@ const process_gene_quiz_answer = function (handlerInput) {
     const remaining_genes = _.get(sessionAttributes, 'gene_list');
     const user_code = _.get(sessionAttributes, 'user_code');
 
-    if (_.isNil(gene_quiz_item) || _.isNil(remaining_genes)
-        || !Array.isArray(remaining_genes || _.isNil(user_code))) {
+    if (
+        _.isNil(gene_quiz_item) || _.isNil(remaining_genes)
+        || !Array.isArray(remaining_genes) || _.isNil(user_code)
+    ) {
         console.error(`Invalid state in AnswerIntentHandler: gene_quiz_item: ${gene_quiz_item},
             remaining_genes: ${remaining_genes}`);
         return responseBuilder
@@ -135,10 +119,9 @@ const process_gene_quiz_answer = function (handlerInput) {
         'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
-    return dbHelper.addGeneUtterance(params)
+    return utterances_repository.addGeneUtterance(params)
         .then(async (data) => {
-            console.log(`Gene utterance saved: ${JSON.stringify(params)} | ${remaining_genes}
-            | data: ${JSON.stringify(data)}`);
+            console.log(`Gene utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
 
             if (remaining_genes.length == 0) {
                 console.log("Gene quiz ended.");
@@ -152,10 +135,8 @@ const process_gene_quiz_answer = function (handlerInput) {
                 let quizResponse = await gene_quiz_response_builder(handlerInput);
                 speech.say("Okay!");
                 speech.pause('500ms');
-                speech.sayWithSSML(quizResponse.speechText);
+                speech.prosody({ rate: 'fast' }, "How about this?");
                 const speechText = speech.ssml();
-                console.info(`GeneQuiz speech response: ${speechText}`);
-
                 return responseBuilder
                     .speak(speechText)
                     .reprompt(quizResponse.repromptText);
@@ -170,6 +151,65 @@ const process_gene_quiz_answer = function (handlerInput) {
         });
 }
 
+const cancer_quiz_response_builder = function (handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const responseBuilder = handlerInput.responseBuilder;
+
+    let promptText = "How would you pronounce this cancer name?";
+    let repromptText = "Please pronounce the cancer name on the screen.";
+    let speech = new Speech();
+    let quizResponse = {};
+
+    if (!('cancer_list' in sessionAttributes)) {
+        let cancer_list = cancer_repository.get_cancer_list();
+        sessionAttributes['cancer_list'] = cancer_list;
+    }
+
+    const remaining_cancers = sessionAttributes['cancer_list'];
+    if (remaining_cancers.length == 0) {
+        console.error(`Invalid state in CancerQuiz | remaining_cancers: ${remaining_cancers}`);
+        responseBuilder.withShouldEndSession(true);
+        quizResponse = {
+            "speechText": "Something went wrong while loading the cancer list from the session. Please try again.",
+            "repromptText": ""
+        };
+
+    } else {
+        const cancer_quiz_item = remaining_cancers.shift();
+        console.log(`Inside CancerQuiz | remaining_cancers: ${remaining_cancers},` +
+            `cancer_quiz_item: ${cancer_quiz_item}`);
+        sessionAttributes['cancer_quiz_item'] = cancer_quiz_item;
+        speech.say(promptText);
+        if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
+            speech.pause('1s');
+            responseBuilder.withSimpleCard(`Cancer Quiz | UID - ${user_code}`, cancer_quiz_item);
+
+        } else {
+            let footer_text = `User ID - ${user_code}`;
+            handlerInput.responseBuilder.addDirective({
+                type: 'Alexa.Presentation.APL.RenderDocument',
+                token: 'pagerToken',
+                version: '1.0',
+                document: APLDocs.quiz_card,
+                datasources: {
+                    'templateData': {
+                        'title': 'Cancer Quiz',
+                        'quiz_item': cancer_quiz_item,
+                        'footer_text': footer_text
+                    },
+                },
+            });
+        }
+
+        quizResponse = {
+            "speechText": speech.ssml(true),
+            "repromptText": repromptText
+        };
+    }
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    return quizResponse;
+}
+
 const process_cancer_quiz_answer = async function (handlerInput) {
     const speech = new Speech();
     const responseBuilder = handlerInput.responseBuilder;
@@ -178,7 +218,10 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     const remaining_cancers = _.get(sessionAttributes, 'cancer_list');
     const user_code = _.get(sessionAttributes, 'user_code');
 
-    if (_.isNil(cancer_quiz_item) || _.isNil(remaining_cancers) || !Array.isArray(remaining_cancers)) {
+    if (
+        _.isNil(cancer_quiz_item) || _.isNil(remaining_cancers) || !Array.isArray(remaining_cancers)
+        || _.isNil(user_code)
+    ) {
         console.error(`Invalid state in AnswerIntentHandler: cancer_quiz_item: ${cancer_quiz_item},
             remaining_cancers: ${remaining_cancers}`);
         return responseBuilder
@@ -204,10 +247,9 @@ const process_cancer_quiz_answer = async function (handlerInput) {
         'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
     };
 
-    return dbHelper.addCancerUtterance(params)
+    return utterances_repository.addCancerUtterance(params)
         .then((data) => {
-            console.log('Cancer utterance saved: ', params);
-            console.log(`Inside addCancerUtterance | remaining_cancers: ${remaining_cancers}`);
+            console.log(`Cancer utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
 
             if (remaining_cancers.length == 0) {
                 console.log("Cancer quiz ended.");
@@ -237,9 +279,102 @@ const process_cancer_quiz_answer = async function (handlerInput) {
         });
 }
 
+const test_quiz_response_builder = function (handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const responseBuilder = handlerInput.responseBuilder;
+
+    let promptText = "What is your query?";
+    let repromptText = "Please provide your query";
+    let speech = new Speech();
+    let quizResponse = {};
+    let last_utterance = '-';
+    const footer_text = 'Alexa, show me Petrificus Totalus!';
+
+    if (!_.isEmpty(sessionAttributes['last_utterance'])) {
+        last_utterance = sessionAttributes['last_utterance'];
+    }
+
+    speech.say(promptText);
+    if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
+        speech.pause('1s');
+        responseBuilder.withSimpleCard('Test Quiz', last_utterance);
+
+    } else {
+        handlerInput.responseBuilder.addDirective({
+            type: 'Alexa.Presentation.APL.RenderDocument',
+            token: 'pagerToken',
+            version: '1.0',
+            document: APLDocs.quiz_card,
+            datasources: {
+                'templateData': {
+                    'title': 'Test Quiz',
+                    'quiz_item': last_utterance,
+                    'footer_text': footer_text
+                },
+            },
+        });
+    }
+
+    quizResponse = {
+        "speechText": speech.ssml(true),
+        "repromptText": repromptText
+    };
+    return quizResponse;
+}
+
+const process_test_quiz_answer = function (handlerInput) {
+    const speech = new Speech();
+    const responseBuilder = handlerInput.responseBuilder;
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    let test_utterance = _.get(handlerInput, 'requestEnvelope.request.intent.slots.quiz_answer_query.value');
+    if (_.isNil(test_utterance)) {
+        console.error(`Slot value for quiz_answer_query not found: 
+        ${JSON.stringify(handlerInput.requestEnvelope.request)}`);
+        return responseBuilder
+            .speak("Sorry, I could not understand what you said. Please try again.")
+            .reprompt("What is your query?");
+    }
+
+    // store the utterance as the last recorded answer in session
+    sessionAttributes['last_utterance'] = test_utterance;
+
+    let params = {
+        'user_id': _.get(handlerInput, 'requestEnvelope.context.System.user.userId'),
+        'utterance': test_utterance,
+        'device_id': _.get(handlerInput, 'requestEnvelope.context.System.device.deviceId'),
+        'session_id': _.get(handlerInput, 'requestEnvelope.session.sessionId'),
+        'request_id': _.get(handlerInput, 'requestEnvelope.request.requestId'),
+        'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
+    };
+
+    return utterances_repository.addTestUtterance(params)
+        .then(async (data) => {
+            console.log(`Test utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
+
+            let quizResponse = test_quiz_response_builder(handlerInput);
+            speech.say("Okay!");
+            const speechText = speech.ssml();
+            console.info(`TestQuiz speech response: ${speechText}`);
+
+            return responseBuilder
+                .speak(speechText)
+                .reprompt(quizResponse.repromptText);
+        })
+        .catch((err) => {
+            console.log(`Could not save test utterance: ${params}`, err);
+            speech.say("Sorry, I'm unable to process that request for the moment. Please try again.");
+            const speechText = speech.ssml();
+            return responseBuilder
+                .speak(speechText);
+        });
+}
+
 module.exports = {
     gene_quiz_response_builder,
     cancer_quiz_response_builder,
+    test_quiz_response_builder,
     process_gene_quiz_answer,
-    process_cancer_quiz_answer
+    process_cancer_quiz_answer,
+    process_test_quiz_answer
 }

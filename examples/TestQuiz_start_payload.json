@@ -6,9 +6,7 @@
         "application": {
             "applicationId": "xxx"
         },
-        "attributes": {
-            "quiz": "GENE_QUIZ"
-        },
+        "attributes": {},
         "user": {
             "userId": "xxx"
         }
@@ -76,18 +74,11 @@
         "requestId": "xxx",
         "timestamp": "2019-08-13T07:51:25Z",
         "locale": "en-US",
-		"intent": {
-			"name": "UserIdentifierIntent",
-			"confirmationStatus": "NONE",
-			"slots": {
-				"user_identifier": {
-					"name": "user_identifier",
-					"value": "0000",
-					"confirmationStatus": "NONE",
-					"source": "USER"
-				}
-			}
-		},
-		"dialogState": "COMPLETED"
+        "intent": {
+            "name": "TestQuizIntent",
+            "confirmationStatus": "NONE",
+            "slots": {}
+        },
+        "dialogState": "COMPLETED"
     }
 }
