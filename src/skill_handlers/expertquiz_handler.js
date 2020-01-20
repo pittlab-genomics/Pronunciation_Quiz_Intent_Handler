@@ -68,7 +68,7 @@ const ExpertAnswerIntentHandler = {
 const StartExpertAnswerIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'StartExpertAnswerIntent';
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ExpertQuizIntent';
     },
     handle(handlerInput) {
         console.log("[StartExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));

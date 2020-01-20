@@ -1,0 +1,68 @@
+{
+    "type": "APL",
+    "version": "1.1",
+    "settings": {},
+    "theme": "dark",
+    "import": [
+        {
+            "name": "alexa-layouts",
+            "version": "1.1.0"
+        }
+    ],
+    "resources": [],
+    "styles": {},
+    "onMount": [],
+    "graphics": {},
+    "commands": {},
+    "layouts": {},
+    "mainTemplate": {
+        "parameters": [
+            "payload"
+        ],
+        "items": [
+            {
+                "type": "Container",
+                "alignItems": "stretch",
+                "justifyContent": "start",
+                "direction": "column",
+                "items": [
+                    {
+                        "headerTitle": "${payload.templateData.title}",
+                        "type": "AlexaHeader"
+                    },
+                    {
+                        "type": "Frame",
+                        "width": "auto",
+                        "height": "70%",
+                        "item": {
+                            "type": "Text",
+                            "height": "auto",
+                            "paddingLeft": "@spacingSmall",
+                            "paddingTop": "@spacingLarge",
+                            "paddingRight": "@spacingSmall",
+                            "textAlign": "center",
+                            "textAlignVertical": "center",
+                            "fontSize": "60dp",
+                            "text": "${payload.templateData.quiz_item}",
+                            "fontWeight": "400"
+                        },
+                        "backgroundColor": "#404040"
+                    },
+                    {
+                        "type": "Text",
+                        "minHeight": "10vh",
+                        "paddingLeft": "@spacingSmall",
+                        "paddingRight": "@spacingSmall",
+                        "textAlign": "left",
+                        "textAlignVertical": "center",
+                        "fontSize": "30dp",
+                        "text": "${payload.templateData.footer_text}",
+                        "fontWeight": "200"
+                    }
+                ],
+                "width": "100%",
+                "height": "100%"
+            }
+        ]
+    }
+}

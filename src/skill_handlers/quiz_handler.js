@@ -2,9 +2,12 @@ var _ = require('lodash');
 const {
     gene_quiz_response_builder,
     cancer_quiz_response_builder,
+    test_quiz_response_builder,
     process_gene_quiz_answer,
-    process_cancer_quiz_answer
+    process_cancer_quiz_answer,
+    process_test_quiz_answer
 } = require("./quiz_helper.js");
+
 const { getSlotValues } = require("../common/util.js")
 
 
@@ -17,7 +20,7 @@ const UserIdentifierIntentHandler = {
         const request = handlerInput.requestEnvelope.request;
         const responseBuilder = handlerInput.responseBuilder;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        const user_code = _.get(sessionAttributes, 'user_code');        
+        const user_code = _.get(sessionAttributes, 'user_code');
 
         if (!_.isEmpty(user_code)) { // check whether a session has already started
             console.info(`[UserIdentifierIntentHandler] quiz already started | user_code: ${user_code}`);
@@ -113,6 +116,24 @@ const CancerQuizIntentHandler = {
     }
 };
 
+const TestQuizIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+            && handlerInput.requestEnvelope.request.intent.name === 'TestQuizIntent';
+    },
+    handle(handlerInput) {
+        const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+        sessionAttributes['quiz'] = 'TEST_QUIZ';
+        handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+        const quizResponse = test_quiz_response_builder(handlerInput);
+        return handlerInput.responseBuilder
+            .speak(quizResponse.speechText)
+            .reprompt(quizResponse.repromptText)
+            .getResponse();
+    }
+};
+
 
 const AnswerIntentHandler = {
     canHandle(handlerInput) {
@@ -123,7 +144,7 @@ const AnswerIntentHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         const responseBuilder = handlerInput.responseBuilder;
         const quiz = _.get(sessionAttributes, 'quiz');
-        console.error(`[AnswerIntentHandler] quiz: ${JSON.stringify(quiz)}`);
+        console.info(`[AnswerIntentHandler] quiz: ${JSON.stringify(quiz)}`);
 
         if (quiz === 'GENE_QUIZ') {
             await process_gene_quiz_answer(handlerInput);
@@ -131,6 +152,9 @@ const AnswerIntentHandler = {
         } else if (quiz === 'CANCER_QUIZ') {
             await process_cancer_quiz_answer(handlerInput);
 
+        } else if (quiz === 'TEST_QUIZ') {
+            await process_test_quiz_answer(handlerInput);
+        
         } else {
             console.error(`Session attribute quiz is not set: ${JSON.stringify(requestEnvelope)}`);
             return handlerInput.responseBuilder
@@ -143,6 +167,7 @@ const AnswerIntentHandler = {
 module.exports = {
     GeneQuizIntentHandler,
     CancerQuizIntentHandler,
+    TestQuizIntentHandler,
     AnswerIntentHandler,
     UserIdentifierIntentHandler
 }

@@ -1,21 +1,22 @@
 'use strict';
 
 const Alexa = require('ask-sdk-core');
+const Speech = require('ssml-builder');
 var _ = require('lodash');
 
 const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
-const { ImageViewerIntentHandler } = require('./skill_handlers/image_viewer_handler.js');
 const { SearchGeneIntentHandler } = require('./skill_handlers/searchgene_handler.js');
 const {
     GeneQuizIntentHandler,
     CancerQuizIntentHandler,
+    TestQuizIntentHandler,
     AnswerIntentHandler,
     UserIdentifierIntentHandler
 } = require('./skill_handlers/quiz_handler.js');
 const {
     ExpertAnswerIntentHandler,
     StartExpertAnswerIntentHandler
-} = require('./skill_handlers/expert_pronunciation_handler.js');
+} = require('./skill_handlers/expertquiz_handler.js');
 
 
 const LaunchRequestHandler = {
@@ -23,9 +24,16 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
+        const speech = new Speech();
+        speech
+            .say("Welcome to gene quiz.")
+            .prosody({ rate: '120%' }, "We have gene quiz, cancer quiz and test quiz.")
+            .pause('500ms')
+            .say("Which one would you like to play?");
+
         return handlerInput.responseBuilder
-            .speak("Welcome to gene quiz. We have gene quiz and cancer quiz. Which one would you like to play?")
-            .reprompt("Which would you like to play? Gene quiz or cancer quiz.")
+            .speak(speech.ssml(true))
+            .reprompt("Which would you like to play? Gene quiz, cancer quiz or test quiz.")
             .getResponse();
     }
 };
@@ -105,37 +113,6 @@ const ErrorHandler = {
     }
 };
 
-
-const TestIntentHandler = {
-    canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-            && handlerInput.requestEnvelope.request.intent.name === 'TestIntent';
-    },
-    handle(handlerInput) {
-        let speechText = 'This is a test handler response.';
-
-        let gene_name = _.get(handlerInput, 'requestEnvelope.request.intent.slots.gene.value');
-        let study_name = _.get(handlerInput, 'requestEnvelope.request.intent.slots.study.value');
-        let study_id = _.get(handlerInput, 'requestEnvelope.request.intent.slots.study.resolutions.resolutionsPerAuthority[0].values[0].value.id');
-
-        let params = { gene_name, study_name, study_id };
-        console.log(`TestIntentHandler params = ${JSON.stringify(params)}`);
-
-        if (!_.isNil(gene_name)) {
-            speechText += `Gene name is ${gene_name}.`
-        }
-
-        if (!_.isNil(study_name)) {
-            speechText += `Study name is ${study_name} and study id is ${study_id}.`
-        }
-
-        return handlerInput.responseBuilder
-            .speak(speechText)
-            .reprompt(speechText)
-            .getResponse();
-    }
-};
-
 // This handler acts as the entry point for your skill, routing all request and response
 // payloads to the handlers above. Make sure any new handlers or interceptors you've
 // defined are included below. The order matters - they're processed top to bottom.
@@ -148,15 +125,12 @@ exports.handler = Alexa.SkillBuilders.custom()
         UserIdentifierIntentHandler,
         GeneQuizIntentHandler,
         CancerQuizIntentHandler,
+        TestQuizIntentHandler,
         AnswerIntentHandler,
-
         SearchGeneIntentHandler,
-        ImageViewerIntentHandler,
-
         ExpertAnswerIntentHandler,
         StartExpertAnswerIntentHandler,
 
-        TestIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
         SessionEndedRequestHandler,

@@ -23,7 +23,11 @@ sls deploy -s uat
 
 ## Test Locally
 
-serverless invoke local --function alexa-skill -p ./examples/GeneQuizIntent_payload.json
 serverless invoke local --function alexa-skill -p ./examples/SearchGeneIntent_query_payload.json
+
+serverless invoke local --function alexa-skill -p ./examples/GeneQuizIntent_payload.json
 serverless invoke local --function alexa-skill -p ./examples/GeneQuizAnswerIntent_payload.json
 serverless invoke local --function alexa-skill -p ./examples/GeneQuizStart_payload.json
+
+serverless invoke local --function alexa-skill -p ./examples/TestQuiz_start_payload.json
+serverless invoke local --function alexa-skill -p ./examples/TestQuiz_last_utterance_payload.json

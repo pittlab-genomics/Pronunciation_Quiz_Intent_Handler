@@ -64,6 +64,26 @@ utterances_repository.prototype.addExpertUtterance = (record) => {
     });
 }
 
+utterances_repository.prototype.addTestUtterance = (record) => {
+    record['createdAt'] = new Date().getTime();
+
+    return new Promise((resolve, reject) => {
+        const params = {
+            TableName: process.env.DYNAMODB_TABLE_TEST_UTTERANCES,
+            Item: record
+        };
+        docClient.put(params, (err, data) => {
+            if (err) {
+                console.log(`Unable to insert test utterance => ${JSON.stringify(params)}`, err);
+                return reject("Unable to insert test utterance");
+            }
+            console.log(`Saved test utterance: ${JSON.stringify(data)} | 
+            TableName: ${process.env.DYNAMODB_TABLE_TEST_UTTERANCES}`);
+            resolve(data);
+        });
+    });
+}
+
 utterances_repository.prototype.getAllGeneUtterances = async (user_code) => {
     let allData = [];
     console.log(`Querying all gene utterances for user_code: ${user_code}`);
