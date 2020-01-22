@@ -1,6 +1,6 @@
 var AWS = require("aws-sdk");
 AWS.config.update({ region: "eu-west-1" });
-const uuid = require('uuid');
+var _ = require('lodash');
 
 var utterances_repository = function () { };
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -84,8 +84,83 @@ utterances_repository.prototype.addTestUtterance = (record) => {
     });
 }
 
-utterances_repository.prototype.getAllGeneUtterances = async (user_code) => {
-    let allData = [];
+utterances_repository.prototype.getAllGeneUtterancesGrouped = async (event_params) => {
+    const utterances_dict = {};
+
+    const start = (_.has(event_params, 'start')) ? event_params['start'] : 0;
+    const end = (_.has(event_params, 'end')) ? event_params['end'] : new Date().valueOf();
+
+    const scan_params = {
+        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        FilterExpression: "#createdAt between :start and :end",
+        ExpressionAttributeNames: {
+            "#createdAt": "createdAt",
+        },
+        ExpressionAttributeValues: {
+            ":start": start,
+            ":end": end
+        }
+    };
+
+    let hasMorePages = true;
+    do {
+        let data = await docClient.scan(scan_params).promise();
+
+        if (data['Items'].length > 0) {
+            data['Items'].forEach(function (entry) {
+                const user_code = parseInt(entry['user_code'], 10);
+                if (_.has(utterances_dict, user_code)) {
+                    utterances_dict[user_code]['utterances_count'] += 1;
+                } else {
+                    utterances_dict[user_code] = {
+                        'utterances_count': 1
+                    }
+                }
+            });
+        }
+
+        if (data.LastEvaluatedKey) {
+            hasMorePages = true;
+            scan_params.ExclusiveStartKey = data.LastEvaluatedKey;
+        } else {
+            hasMorePages = false;
+        }
+    } while (hasMorePages);
+
+
+
+    return utterances_dict;
+}
+
+utterances_repository.prototype.getAllGeneUtterances = async () => {
+    let all_utterances_list = [];
+    console.log(`Querying all gene utterances`);
+    var params = {
+        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES
+    };
+
+    let hasMorePages = true;
+    do {
+        let data = await docClient.scan(params).promise();
+
+        if (data['Items'].length > 0) {
+            all_utterances_list = [...all_utterances_list, ...data['Items']];
+        }
+
+        if (data.LastEvaluatedKey) {
+            hasMorePages = true;
+            params.ExclusiveStartKey = data.LastEvaluatedKey;
+        } else {
+            hasMorePages = false;
+        }
+    } while (hasMorePages);
+
+    console.info(`[getAllGeneUtterances] dataset length: ${all_utterances_list.length}`)
+    return all_utterances_list;
+}
+
+utterances_repository.prototype.getAllGeneUtterancesByUser = async (user_code) => {
+    let all_utterances_list = [];
     console.log(`Querying all gene utterances for user_code: ${user_code}`);
     var params = {
         TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
@@ -103,7 +178,7 @@ utterances_repository.prototype.getAllGeneUtterances = async (user_code) => {
         let data = await docClient.query(params).promise();
 
         if (data['Items'].length > 0) {
-            allData = [...allData, ...data['Items']];
+            all_utterances_list = [...all_utterances_list, ...data['Items']];
         }
 
         if (data.LastEvaluatedKey) {
@@ -114,7 +189,8 @@ utterances_repository.prototype.getAllGeneUtterances = async (user_code) => {
         }
     } while (hasMorePages);
 
-    return allData;
+    console.info(`[getAllGeneUtterancesByUser] dataset length: ${all_utterances_list.length}`)
+    return all_utterances_list;
 }
 
 module.exports = new utterances_repository();

@@ -27,7 +27,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        const gene_utterances = await utterances_repository.getAllGeneUtterances(user_code);
+        const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
         console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
             + ` gene_utterances len: ${gene_utterances.length}`);
         let gene_list = await genes_repository.get_gene_list(gene_utterances);
@@ -45,17 +45,20 @@ const gene_quiz_response_builder = async function (handlerInput) {
 
     } else {
         const gene_quiz_item = remaining_genes.shift();
+        const completed_items = 60 - remaining_genes.length - 1;
         console.info(`GeneQuiz response builder | remaining_genes: ${remaining_genes},` +
             `gene_quiz_item: ${gene_quiz_item}`);
+
         sessionAttributes['gene_quiz_item'] = gene_quiz_item;
         speech.say(promptText);
 
         if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
             speech.pause('1s');
-            responseBuilder.withSimpleCard(`Gene Quiz | UID - ${user_code}`, gene_quiz_item);
+            responseBuilder.withSimpleCard(`Gene Quiz | UID: ${user_code}`,
+                `${completed_items}.  ${gene_quiz_item}`);
 
         } else {
-            let footer_text = `User ID - ${user_code}`;
+            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/60`;
             handlerInput.responseBuilder.addDirective({
                 type: 'Alexa.Presentation.APL.RenderDocument',
                 token: 'pagerToken',
