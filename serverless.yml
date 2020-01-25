@@ -7,6 +7,10 @@ provider:
   runtime: nodejs10.x
   stage: ${self:custom.stage}
   region: eu-west-1
+  memorySize: 2048
+  tracing:
+    lambda: true
+    apiGateway: true
   environment: ${self:custom.config.environment}
   timeout: 30
   iamRoleStatements:
@@ -60,13 +64,16 @@ provider:
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_TEST_UTTERANCES}"
 
 functions:
-  alexa-skill:
-    handler: src/alexa-skill.handler
-    module: src
-    events:
-      - alexaSkill:
-          appId: ${self:custom.config.alexa.appId}
-          enabled: true
+  - alexa-skill:
+      handler: src/alexa-skill.handler
+      module: src
+      events:
+        - alexaSkill:
+            appId: ${self:custom.config.alexa.appId}
+            enabled: true
+
+  # GeneQuiz dashboard
+  - ${file(src/dashboard/dashboard.serverless.yml)}
 
 plugins:
   - serverless-plugin-aws-alerts

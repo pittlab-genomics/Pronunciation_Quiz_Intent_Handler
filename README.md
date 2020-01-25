@@ -31,3 +31,17 @@ serverless invoke local --function alexa-skill -p ./examples/GeneQuizStart_paylo
 
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_start_payload.json
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_last_utterance_payload.json
+
+### Dashboard functions
+serverless invoke local --function dashboard_stats
+serverless invoke local --function dashboard_stats --data '{"queryStringParameters":{"start":"1579333013000"}}'
+serverless invoke local --function dashboard_stats --data '{"queryStringParameters":{"start":"1579333013000", "end": "1579680598000"}}'
+serverless invoke local --function dashboard_stats --data '{"queryStringParameters":{"end": "1579680598000"}}'
+serverless invoke local --function dashboard_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "end_date": "2020-01-20"}}'
+
+serverless invoke local --function gene_utterances_list
+
+serverless invoke local --function gene_utterances_stats
+serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "end_date": "2020-01-20"}}'
+serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"user_code": "0000"}}'
+serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "end_date": "2020-01-20", "user_code": "0000"}}'

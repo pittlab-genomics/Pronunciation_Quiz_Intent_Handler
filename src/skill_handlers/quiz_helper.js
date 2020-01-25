@@ -15,7 +15,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes['user_code'];
 
-    if (_.isNil(user_code)) {
+    if (!_.isNumber(user_code)) {
         console.error(`Invalid state in gene_quiz_response_builder: handlerInput: ${JSON.stringify(handlerInput)}`);
         return responseBuilder
             .speak("Something went wrong while retrieving the quiz card. Please try again.");
@@ -27,7 +27,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        const gene_utterances = await utterances_repository.getAllGeneUtterances(user_code);
+        const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
         console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
             + ` gene_utterances len: ${gene_utterances.length}`);
         let gene_list = await genes_repository.get_gene_list(gene_utterances);
@@ -45,17 +45,20 @@ const gene_quiz_response_builder = async function (handlerInput) {
 
     } else {
         const gene_quiz_item = remaining_genes.shift();
+        const completed_items = 60 - remaining_genes.length - 1;
         console.info(`GeneQuiz response builder | remaining_genes: ${remaining_genes},` +
             `gene_quiz_item: ${gene_quiz_item}`);
+
         sessionAttributes['gene_quiz_item'] = gene_quiz_item;
         speech.say(promptText);
 
         if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
             speech.pause('1s');
-            responseBuilder.withSimpleCard(`Gene Quiz | UID - ${user_code}`, gene_quiz_item);
+            responseBuilder.withSimpleCard(`Gene Quiz | UID: ${user_code}`,
+                `${completed_items}.  ${gene_quiz_item}`);
 
         } else {
-            let footer_text = `User ID - ${user_code}`;
+            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/60`;
             handlerInput.responseBuilder.addDirective({
                 type: 'Alexa.Presentation.APL.RenderDocument',
                 token: 'pagerToken',
@@ -79,7 +82,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
     console.info(`GeneQuiz response builder | quizResponse: ${JSON.stringify(quizResponse)}`);
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
     return quizResponse;
-}
+};
 
 const process_gene_quiz_answer = function (handlerInput) {
     const speech = new Speech();
@@ -90,8 +93,7 @@ const process_gene_quiz_answer = function (handlerInput) {
     const user_code = _.get(sessionAttributes, 'user_code');
 
     if (
-        _.isNil(gene_quiz_item) || _.isNil(remaining_genes)
-        || !Array.isArray(remaining_genes) || _.isNil(user_code)
+        _.isNil(gene_quiz_item) || !Array.isArray(remaining_genes) || !_.isNumber(user_code)
     ) {
         console.error(`Invalid state in AnswerIntentHandler: gene_quiz_item: ${gene_quiz_item},
             remaining_genes: ${remaining_genes}`);
@@ -149,11 +151,18 @@ const process_gene_quiz_answer = function (handlerInput) {
             return responseBuilder
                 .speak(speechText);
         });
-}
+};
 
 const cancer_quiz_response_builder = function (handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
+    const user_code = sessionAttributes['user_code'];
+
+    if (!_.isNumber(user_code)) {
+        console.error(`Invalid state in cancer_quiz_response_builder: handlerInput: ${JSON.stringify(handlerInput)}`);
+        return responseBuilder
+            .speak("Something went wrong while retrieving the quiz card. Please try again.");
+    }
 
     let promptText = "How would you pronounce this cancer name?";
     let repromptText = "Please pronounce the cancer name on the screen.";
@@ -208,7 +217,7 @@ const cancer_quiz_response_builder = function (handlerInput) {
     }
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
     return quizResponse;
-}
+};
 
 const process_cancer_quiz_answer = async function (handlerInput) {
     const speech = new Speech();
@@ -219,8 +228,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     const user_code = _.get(sessionAttributes, 'user_code');
 
     if (
-        _.isNil(cancer_quiz_item) || _.isNil(remaining_cancers) || !Array.isArray(remaining_cancers)
-        || _.isNil(user_code)
+        _.isNil(cancer_quiz_item) || !Array.isArray(remaining_cancers) || !_.isNumber(user_code)
     ) {
         console.error(`Invalid state in AnswerIntentHandler: cancer_quiz_item: ${cancer_quiz_item},
             remaining_cancers: ${remaining_cancers}`);
@@ -233,7 +241,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
         console.info(`Slot value for quiz_answer_query not found: ${JSON.stringify(requestEnvelope.request)}`);
         return responseBuilder
             .speak("I could not understand what you said. Please try again.")
-            .reprompt("Please pronounce the gene name on the screen");
+            .reprompt("Please pronounce the cancer name on the screen");
     }
 
     let params = {
@@ -277,7 +285,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
             return responseBuilder
                 .speak(speechText);
         });
-}
+};
 
 const test_quiz_response_builder = function (handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -320,7 +328,7 @@ const test_quiz_response_builder = function (handlerInput) {
         "repromptText": repromptText
     };
     return quizResponse;
-}
+};
 
 const process_test_quiz_answer = function (handlerInput) {
     const speech = new Speech();
@@ -368,7 +376,7 @@ const process_test_quiz_answer = function (handlerInput) {
             return responseBuilder
                 .speak(speechText);
         });
-}
+};
 
 module.exports = {
     gene_quiz_response_builder,
