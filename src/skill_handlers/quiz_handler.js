@@ -22,7 +22,7 @@ const UserIdentifierIntentHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         const user_code = _.get(sessionAttributes, 'user_code');
 
-        if (!_.isEmpty(user_code)) { // check whether a session has already started
+        if (!_.isNil(user_code)) { // check whether a session has already started
             console.info(`[UserIdentifierIntentHandler] quiz already started | user_code: ${user_code}`);
             return responseBuilder
                 .speak("Gene quiz has already started.")
@@ -154,7 +154,7 @@ const AnswerIntentHandler = {
 
         } else if (quiz === 'TEST_QUIZ') {
             await process_test_quiz_answer(handlerInput);
-        
+
         } else {
             console.error(`Session attribute quiz is not set: ${JSON.stringify(requestEnvelope)}`);
             return handlerInput.responseBuilder

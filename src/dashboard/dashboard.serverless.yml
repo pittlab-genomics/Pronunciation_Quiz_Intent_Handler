@@ -7,7 +7,13 @@ dashboard_stats:
     - http: get /dashboard/stats
 
 gene_utterances_list:
-  handler: src/dashboard/gene_utterances_list.handler
+  handler: src/dashboard/gene_utterances.list_handler
   module: src/dashboard
   events:
-    - http: get /dashboard/gene_utterances
+    - http: get /dashboard/gene_utterances/list
+
+gene_utterances_stats:
+  handler: src/dashboard/gene_utterances.stats_handler
+  module: src/dashboard
+  events:
+    - http: get /dashboard/gene_utterances/stats

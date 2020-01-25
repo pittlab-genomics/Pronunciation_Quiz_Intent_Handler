@@ -33,7 +33,7 @@ exports.handler = async function (event) {
             params['end'] = parseInt(query_params['end']);
         }
 
-        const utterances_dict = await utterances_repository.getAllGeneUtterancesGrouped(params);
+        const utterances_dict = await utterances_repository.getUtterancesCountGrouped(params);
         for (const [key, value] of Object.entries(user_code_names_dict)) {
             if (_.has(utterances_dict, key)) {
                 utterances_dict[key]['name'] = value;
@@ -47,7 +47,7 @@ exports.handler = async function (event) {
     }
     catch (err) {
         status_code = 500;
-        console.log(`[dashboard.stats] Exception raised: ${JSON.stringify(err)}`);
+        console.error(`[dashboard.stats] Exception raised: ${JSON.stringify(err)}`, err);
         response = {
             "error": "Something went wrong"
         }
