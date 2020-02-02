@@ -1,4 +1,5 @@
 var _ = require('lodash');
+const moment = require('moment');
 
 const utterances_repository = require('../dao/utterances_repository.js');
 
@@ -9,6 +10,7 @@ const user_code_names_dict = {
     219: "Hannan Wong",
     9727: "Akila Perera"
 }
+
 
 exports.handler = async function (event) {
     console.log(`[dashboard.stats] event: ${JSON.stringify(event)}`);
@@ -21,8 +23,8 @@ exports.handler = async function (event) {
             params['start'] = new Date(query_params['start_date']).valueOf();
         }
 
-        if (_.has(query_params, 'end_date')) {
-            params['end'] = new Date(query_params['end_date']).valueOf();
+        if (_.has(query_params, 'end_date')) {            
+            params['end'] = moment(query_params['end_date']).endOf('day').valueOf();
         }
 
         if (_.has(query_params, 'start')) {

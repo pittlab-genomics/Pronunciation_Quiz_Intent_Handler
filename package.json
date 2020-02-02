@@ -11,7 +11,8 @@
     "request": "^2.88.0",
     "serverless-plugin-aws-alerts": "^1.4.0",
     "ssml-builder": "^0.4.3",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0"
   },
   "devDependencies": {
     "serverless-plugin-include-dependencies": "^3.2.1",
