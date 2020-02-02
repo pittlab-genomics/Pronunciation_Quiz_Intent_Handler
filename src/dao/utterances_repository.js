@@ -1,12 +1,16 @@
 var AWS = require("aws-sdk");
 AWS.config.update({ region: "eu-west-1" });
 var _ = require('lodash');
+const moment = require('moment');
 
 var utterances_repository = function () { };
 var docClient = new AWS.DynamoDB.DocumentClient();
 
+
 utterances_repository.prototype.addGeneUtterance = (record) => {
-    record['createdAt'] = new Date().getTime();
+    let d = new Date();
+    d.setDate(d.getDate() - 1);
+    record['createdAt'] = d.getTime();
 
     return new Promise((resolve, reject) => {
         const params = {
@@ -87,7 +91,8 @@ utterances_repository.prototype.addTestUtterance = (record) => {
 utterances_repository.prototype.getUtterancesCountGrouped = async (event_params) => {
     const utterances_dict = {};
     const start = (_.has(event_params, 'start')) ? event_params['start'] : 0;
-    const end = (_.has(event_params, 'end')) ? event_params['end'] : new Date().valueOf();
+    const end = (_.has(event_params, 'end')) ? event_params['end'] : moment().endOf('day').valueOf();
+    console.log(`getUtterancesCountGrouped: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     const scan_params = {
         TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
@@ -133,8 +138,8 @@ utterances_repository.prototype.getUtterancesCountGrouped = async (event_params)
 utterances_repository.prototype.getFilteredGeneUtterances = async (event_params) => {
     let all_utterances_list = [];
     const start = (_.has(event_params, 'start')) ? event_params['start'] : 0;
-    const end = (_.has(event_params, 'end')) ? event_params['end'] : new Date().valueOf();
-    console.log(`Querying filtered gene utterances: ${JSON.stringify(event_params)}`);
+    const end = (_.has(event_params, 'end')) ? event_params['end'] : moment().endOf('day').valueOf();
+    console.log(`getFilteredGeneUtterances: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     var scan_params = {
         TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,

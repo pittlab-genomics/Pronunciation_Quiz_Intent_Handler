@@ -1,4 +1,5 @@
-var _ = require('lodash');
+const _ = require('lodash');
+const moment = require('moment');
 
 const utterances_repository = require('../dao/utterances_repository.js');
 
@@ -38,13 +39,14 @@ exports.stats_handler = async function (event) {
     let status_code = 200;
     const query_params = event['queryStringParameters'] || {};
     const params = {};
+
     try {
         if (_.has(query_params, 'start_date')) {
             params['start'] = new Date(query_params['start_date']).valueOf();
         }
 
         if (_.has(query_params, 'end_date')) {
-            params['end'] = new Date(query_params['end_date']).valueOf();
+            params['end'] = moment(query_params['end_date']).endOf('day').valueOf();
         }
 
         if (_.has(query_params, 'start')) {
