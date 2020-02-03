@@ -20,10 +20,10 @@ exports.handler = async function (event) {
     const params = {};
     try {
         if (_.has(query_params, 'start_date')) {
-            params['start'] = new Date(query_params['start_date']).valueOf();
+            params['start'] = moment(query_params['start_date']).valueOf();
         }
 
-        if (_.has(query_params, 'end_date')) {            
+        if (_.has(query_params, 'end_date')) {
             params['end'] = moment(query_params['end_date']).endOf('day').valueOf();
         }
 

@@ -8,9 +8,7 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 
 
 utterances_repository.prototype.addGeneUtterance = (record) => {
-    let d = new Date();
-    d.setDate(d.getDate() - 1);
-    record['createdAt'] = d.getTime();
+    record['createdAt'] = moment().valueOf();
 
     return new Promise((resolve, reject) => {
         const params = {
@@ -30,7 +28,7 @@ utterances_repository.prototype.addGeneUtterance = (record) => {
 }
 
 utterances_repository.prototype.addCancerUtterance = (record) => {
-    record['createdAt'] = new Date().getTime();
+    record['createdAt'] = moment().valueOf();
 
     return new Promise((resolve, reject) => {
         const params = {
@@ -50,7 +48,7 @@ utterances_repository.prototype.addCancerUtterance = (record) => {
 
 
 utterances_repository.prototype.addExpertUtterance = (record) => {
-    record['createdAt'] = new Date().getTime();
+    record['createdAt'] = moment().valueOf();
 
     return new Promise((resolve, reject) => {
         const params = {
@@ -69,7 +67,7 @@ utterances_repository.prototype.addExpertUtterance = (record) => {
 }
 
 utterances_repository.prototype.addTestUtterance = (record) => {
-    record['createdAt'] = new Date().getTime();
+    record['createdAt'] = moment().valueOf();
 
     return new Promise((resolve, reject) => {
         const params = {

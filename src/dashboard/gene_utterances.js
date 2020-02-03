@@ -42,7 +42,7 @@ exports.stats_handler = async function (event) {
 
     try {
         if (_.has(query_params, 'start_date')) {
-            params['start'] = new Date(query_params['start_date']).valueOf();
+            params['start'] = moment(query_params['start_date']).valueOf();
         }
 
         if (_.has(query_params, 'end_date')) {
