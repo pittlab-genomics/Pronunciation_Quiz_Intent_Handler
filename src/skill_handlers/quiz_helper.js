@@ -4,6 +4,7 @@ const genes_repository = require("../dao/genes_repository");
 const cancer_repository = require("../dao/cancer_repository.js");
 const { supportsAPL } = require("../common/util.js")
 const utterances_repository = require('../dao/utterances_repository.js');
+const { user_code_names_dict } = require('../common/config.js');
 
 const APLDocs = {
     quiz_card: require('../../resources/APL/quiz_card.json'),
@@ -27,10 +28,16 @@ const gene_quiz_response_builder = async function (handlerInput) {
     let quizResponse = {};
 
     if (!('gene_list' in sessionAttributes)) {
-        const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
-        console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
-            + ` gene_utterances len: ${gene_utterances.length}`);
-        let gene_list = await genes_repository.get_gene_list(gene_utterances);
+        let gene_list = [];
+        if (user_code in user_code_names_dict) {
+            const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
+            console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
+                + ` gene_utterances len: ${gene_utterances.length}`);
+            gene_list = await genes_repository.get_gene_list(gene_utterances);
+        } else {
+            gene_list = genes_repository.get_rand_gene_list();
+        }
+
         sessionAttributes['gene_list'] = gene_list;
     }
 
@@ -135,9 +142,9 @@ const process_gene_quiz_answer = function (handlerInput) {
 
             } else {
                 let quizResponse = await gene_quiz_response_builder(handlerInput);
-                speech.say("Okay!");
-                speech.pause('500ms');
-                speech.prosody({ rate: 'fast' }, "How about this?");
+                speech.prosody({ rate: 'fast' }, "Ok");
+                // speech.pause('500ms');
+                // speech.prosody({ rate: 'fast' }, "How about this?");
                 const speechText = speech.ssml();
                 return responseBuilder
                     .speak(speechText)
