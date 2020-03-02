@@ -2,14 +2,7 @@ var _ = require('lodash');
 const moment = require('moment');
 
 const utterances_repository = require('../dao/utterances_repository.js');
-
-const user_code_names_dict = {
-    4525: "Jason Pitt",
-    7387: "Vinay Warrier",
-    81: "Stephanus Lie",
-    219: "Hannan Wong",
-    9727: "Akila Perera"
-}
+const {user_code_names_dict} = require('../common/config.js');
 
 
 exports.handler = async function (event) {

@@ -41,6 +41,14 @@ async function get_gene_list(gene_utterances) {
     return shuffle(gene_list);
 }
 
+function get_rand_gene_list() {
+    const shuffled = shuffle([...gene_list_top_723]).slice(0, 30);
+    const gene_list = [...shuffled, ...shuffled]; // repeat each gene twice for each session
+    return shuffle(gene_list);
+}
+
+
 module.exports = {
-    get_gene_list
+    get_gene_list,
+    get_rand_gene_list
 }
