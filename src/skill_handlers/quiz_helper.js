@@ -33,7 +33,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
             const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
             console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
                 + ` gene_utterances len: ${gene_utterances.length}`);
-            gene_list = await genes_repository.get_gene_list(gene_utterances);
+            gene_list = await genes_repository.get_generif_list(gene_utterances);
         } else {
             gene_list = genes_repository.get_rand_gene_list();
         }
