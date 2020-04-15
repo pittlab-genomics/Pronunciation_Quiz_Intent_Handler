@@ -17,3 +17,15 @@ gene_utterances_stats:
   module: src/dashboard
   events:
     - http: get /dashboard/gene_utterances/stats
+
+cancer_utterances_list:
+  handler: src/dashboard/cancer_utterances.list_handler
+  module: src/dashboard
+  events:
+    - http: get /dashboard/cancer_utterances/list
+
+cancer_utterances_stats:
+  handler: src/dashboard/cancer_utterances.stats_handler
+  module: src/dashboard
+  events:
+    - http: get /dashboard/cancer_utterances/stats

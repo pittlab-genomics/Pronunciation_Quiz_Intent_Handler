@@ -2,7 +2,7 @@ var _ = require('lodash');
 const moment = require('moment');
 
 const utterances_repository = require('../dao/utterances_repository.js');
-const {user_code_names_dict} = require('../common/config.js');
+const { user_code_names_dict } = require('../common/config.js');
 
 
 exports.handler = async function (event) {
@@ -28,7 +28,7 @@ exports.handler = async function (event) {
             params['end'] = parseInt(query_params['end']);
         }
 
-        const utterances_dict = await utterances_repository.getUtterancesCountGrouped(params);
+        const utterances_dict = await utterances_repository.getUtterancesCountGroupedByUser(params);
         for (const [key, value] of Object.entries(user_code_names_dict)) {
             if (_.has(utterances_dict, key)) {
                 utterances_dict[key]['name'] = value;
@@ -36,7 +36,8 @@ exports.handler = async function (event) {
         }
         response = {
             'data': {
-                'records': utterances_dict
+                'gene_names': utterances_dict['gene_names'],
+                'cancer_names': utterances_dict['cancer_names']
             }
         }
     }

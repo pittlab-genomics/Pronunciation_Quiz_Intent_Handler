@@ -5,11 +5,11 @@ const utterances_repository = require('../dao/utterances_repository.js');
 
 
 exports.list_handler = async function (event) {
-    console.log(`[dashboard.gene_utterances_list] event: ${JSON.stringify(event)}`);
+    console.log(`[dashboard.cancer_utterances_list] event: ${JSON.stringify(event)}`);
     let response = {};
     let status_code = 200;
     try {
-        const all_utterances = await utterances_repository.getAllGeneUtterances();
+        const all_utterances = await utterances_repository.getAllCancerUtterances();
         response = {
             'data': {
                 'record_count': all_utterances.length,
@@ -19,7 +19,7 @@ exports.list_handler = async function (event) {
     }
     catch (err) {
         status_code = 500;
-        console.error(`[dashboard.gene_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
+        console.error(`[dashboard.cancer_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
         response = {
             "error": "Something went wrong"
         }
@@ -34,7 +34,7 @@ exports.list_handler = async function (event) {
 
 
 exports.stats_handler = async function (event) {
-    console.log(`[dashboard.gene_utterances_list] event: ${JSON.stringify(event)}`);
+    console.log(`[dashboard.cancer_utterances_list] event: ${JSON.stringify(event)}`);
     let response = {};
     let status_code = 200;
     const query_params = event['queryStringParameters'] || {};
@@ -61,14 +61,14 @@ exports.stats_handler = async function (event) {
             params['user_code'] = parseInt(query_params['user_code']);
         }
 
-        const gene_utterances_stats = await utterances_repository.getUtterancesCountByGene(params);
+        const cancer_utterances_stats = await utterances_repository.getUtterancesCountByCancer(params);
         response = {
-            'data': gene_utterances_stats
+            'data': cancer_utterances_stats
         }
     }
     catch (err) {
         status_code = 500;
-        console.error(`[dashboard.gene_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
+        console.error(`[dashboard.cancer_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
         response = {
             "error": "Something went wrong"
         }
