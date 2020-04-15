@@ -144,7 +144,7 @@ const process_gene_quiz_answer = function (handlerInput) {
                 let quizResponse = await gene_quiz_response_builder(handlerInput);
                 speech.prosody({ rate: 'fast' }, "Ok");
                 // speech.pause('500ms');
-                // speech.prosody({ rate: 'fast' }, "How about this?");
+                // speech.sayWithSSML(quizResponse.speechText);
                 const speechText = speech.ssml();
                 return responseBuilder
                     .speak(speechText)
@@ -275,9 +275,9 @@ const process_cancer_quiz_answer = async function (handlerInput) {
 
             } else {
                 let quizResponse = cancer_quiz_response_builder(handlerInput);
-                speech.say("Okay!");
-                speech.pause('500ms');
-                speech.sayWithSSML(quizResponse.speechText);
+                speech.prosody({ rate: 'fast' }, "Ok");
+                // speech.pause('500ms');
+                // speech.sayWithSSML(quizResponse.speechText);
                 const speechText = speech.ssml();
 
                 return responseBuilder
@@ -368,7 +368,7 @@ const process_test_quiz_answer = function (handlerInput) {
             console.log(`Test utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
 
             let quizResponse = test_quiz_response_builder(handlerInput);
-            speech.say("Okay!");
+            speech.prosody({ rate: 'fast' }, "Ok");
             const speechText = speech.ssml();
             console.info(`TestQuiz speech response: ${speechText}`);
 
