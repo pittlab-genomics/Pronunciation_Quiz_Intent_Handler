@@ -1,9 +1,10 @@
 const Speech = require('ssml-builder');
 var _ = require('lodash');
+
 const genes_repository = require("../dao/genes_repository");
 const cancer_repository = require("../dao/cancer_repository.js");
-const { supportsAPL } = require("../common/util.js")
 const utterances_repository = require('../dao/utterances_repository.js');
+const { supportsAPL } = require("../common/util.js")
 const { user_code_names_dict } = require('../common/config.js');
 
 const APLDocs = {
@@ -177,7 +178,7 @@ const cancer_quiz_response_builder = function (handlerInput) {
     let quizResponse = {};
 
     if (!('cancer_list' in sessionAttributes)) {
-        let cancer_list = cancer_repository.get_cancer_list();
+        let cancer_list = cancer_repository.get_rand_cancer_list();
         sessionAttributes['cancer_list'] = cancer_list;
     }
 
