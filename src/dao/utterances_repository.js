@@ -1,11 +1,15 @@
 var AWS = require("aws-sdk");
-AWS.config.update({ region: "eu-west-1" });
 var _ = require('lodash');
 const moment = require('moment');
 
-const utterances_repository = function () { };
+const { groupItemsCountLabeled } = require('../common/util.js')
+
+
+AWS.config.update({ region: "eu-west-1" });
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+// create prototype for utterances_repository
+const utterances_repository = function () { };
 
 utterances_repository.prototype.addGeneUtterance = (record) => {
     record['createdAt'] = moment().valueOf();
@@ -159,7 +163,7 @@ utterances_repository.prototype.getFilteredGeneUtterances = async function (even
 
 utterances_repository.prototype.getUtterancesCountByGene = async function (event_params) {
     const filtered_utterances = await this.getFilteredGeneUtterances(event_params);
-    return groupItemsCount(filtered_utterances, 'gene_name');
+    return groupItemsCountLabeled(filtered_utterances, 'gene_name');
 }
 
 utterances_repository.prototype.getFilteredCancerUtterances = async function (event_params) {
@@ -193,7 +197,7 @@ utterances_repository.prototype.getFilteredCancerUtterances = async function (ev
 
 utterances_repository.prototype.getUtterancesCountByCancer = async function (event_params) {
     const filtered_utterances = await this.getFilteredCancerUtterances(event_params);
-    return groupItemsCount(filtered_utterances, 'cancer_name');
+    return groupItemsCountLabeled(filtered_utterances, 'cancer_name');
 }
 
 utterances_repository.prototype.getAllGeneUtterances = async () => {
@@ -246,22 +250,6 @@ utterances_repository.prototype.getAllGeneUtterancesByUser = async (user_code) =
 /*
  * Private functions
  */
-
-function groupItemsCount(data, attribute_name) {
-    const count_dict = {};
-    data.forEach(function (entry) {
-        const item = entry[attribute_name];
-        if (_.has(count_dict, item)) {
-            count_dict[item]['utterances_count'] += 1;
-        } else {
-            count_dict[item] = {
-                'utterances_count': 1 // initial entry for the counter
-            }
-        }
-    });
-    return count_dict;
-}
-
 
 async function getGroupedCount(scan_params) {
     let utterances_dict = {}

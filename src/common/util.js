@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 const supportsAPL = function (handlerInput) {
     const supportedInterfaces = handlerInput.requestEnvelope.context
         .System.device.supportedInterfaces;
@@ -50,7 +52,7 @@ const getSlotValues = function (filledSlots) {
 * Shuffles array in place. ES6 version
 * @param {Array} a items An array containing the items.
 */
-const shuffle = function (a) {
+const shuffle = (a) => {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -58,8 +60,40 @@ const shuffle = function (a) {
     return a;
 }
 
+function groupItemsCount(data, attribute_name) {
+    const count_dict = {};
+    data.forEach(function (entry) {
+        const item = entry[attribute_name];
+        if (_.has(count_dict, item)) {
+            count_dict[item] += 1;
+        } else {
+            count_dict[item] = 1; // initial entry for the counter
+        }
+    });
+    return count_dict;
+}
+
+
+function groupItemsCountLabeled(data, attribute_name) {
+    const count_dict = {};
+    data.forEach(function (entry) {
+        const item = entry[attribute_name];
+        if (_.has(count_dict, item)) {
+            count_dict[item]['utterances_count'] += 1;
+        } else {
+            count_dict[item] = {
+                'utterances_count': 1 // initial entry for the counter
+            }
+        }
+    });
+    return count_dict;
+}
+
+
 module.exports = {
     supportsAPL,
     getSlotValues,
-    shuffle
+    shuffle,
+    groupItemsCount,
+    groupItemsCountLabeled
 }

@@ -1,4 +1,6 @@
-const cancer_list_1 = [
+const { shuffle } = require('../common/util.js')
+
+const cancer_list = [
     "Acute Myeloid Leukemia",
     "AML",
     "Adrenocortical carcinoma",
@@ -107,21 +109,15 @@ const cancer_list_1 = [
     "Uveal Melanoma"
 ];
 
-const cancer_list_2 = [
-
-];
-
-const cancer_list_3 = [
-
-];
-
-function get_cancer_list() {
-    let cancer_list = [];
-    // cancer_list = cancer_list_1.concat(cancer_list_2, cancer_list_3);
-    cancer_list = cancer_list_1;
+const get_cancer_list = () => {
     return cancer_list;
 }
 
+const get_rand_cancer_list = () => {
+    return shuffle(cancer_list);
+}
+
 module.exports = {
-    get_cancer_list
+    get_cancer_list,
+    get_rand_cancer_list
 }

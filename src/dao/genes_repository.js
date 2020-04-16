@@ -1,17 +1,11 @@
 var _ = require('lodash');
 const { gene_list_top_723 } = require('./genes_top_723.js');
 const { gene_list_GENERIF_top50 } = require('./gene_list_GENERIF_top50.js');
-const { shuffle } = require('../common/util.js')
+const { shuffle, groupItemsCount } = require('../common/util.js')
 
 async function get_gene_list(gene_utterances) {
-    let utterances_dict = {};
-    gene_utterances.forEach(function (item) {
-        let gene_name = item['gene_name'];
-        if (_.isNil(utterances_dict[gene_name])) {
-            utterances_dict[gene_name] = 0;
-        }
-        utterances_dict[gene_name]++;
-    });
+    // Count the number of utterances for each gene name
+    let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
 
     // Create utterances_items out of utterances_dict array for sorting
     let utterances_items = Object.keys(utterances_dict).map(function (key) {
@@ -49,14 +43,8 @@ function get_rand_gene_list() {
 }
 
 async function get_generif_list(gene_utterances) {
-    let utterances_dict = {};
-    gene_utterances.forEach(function (item) {
-        let gene_name = item['gene_name'];
-        if (_.isNil(utterances_dict[gene_name])) {
-            utterances_dict[gene_name] = 0;
-        }
-        utterances_dict[gene_name]++;
-    });
+    // Count the number of utterances for each gene name
+    let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
 
     // Create utterances_items out of utterances_dict array for sorting
     let utterances_items = Object.keys(utterances_dict).map(function (key) {
