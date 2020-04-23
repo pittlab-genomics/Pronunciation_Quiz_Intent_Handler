@@ -109,12 +109,21 @@ const cancer_list = [
     "Uveal Melanoma"
 ];
 
-const get_cancer_list = () => {
+function get_cancer_list() {
     return cancer_list;
 }
 
-const get_rand_cancer_list = () => {
-    return shuffle(cancer_list);
+function get_rand_cancer_list(count, repeat) {
+    // Create a new array with only the first N distinct items
+    const N = Math.floor(count / repeat);
+    const shuffled_list = shuffle(cancer_list).slice(0, N);
+
+    // repeat each cancer_name for each session
+    const rand_cancer_list = [];
+    shuffled_list.forEach(function (cancer_name) {
+        rand_cancer_list.push(...Array.from({ length: repeat }).map(x => cancer_name));
+    });
+    return shuffle(rand_cancer_list);
 }
 
 module.exports = {
