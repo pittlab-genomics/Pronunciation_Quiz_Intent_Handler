@@ -5,7 +5,7 @@ const genes_repository = require("../dao/genes_repository");
 const cancer_repository = require("../dao/cancer_repository.js");
 const utterances_repository = require('../dao/utterances_repository.js');
 const { supportsAPL } = require("../common/util.js")
-const { user_code_names_dict } = require('../common/config.js');
+const { user_code_names_dict, QUIZ_PROMPTS_PER_SESSION } = require('../common/config.js');
 
 const APLDocs = {
     quiz_card: require('../../resources/APL/quiz_card.json'),
@@ -31,12 +31,15 @@ const gene_quiz_response_builder = async function (handlerInput) {
     if (!('gene_list' in sessionAttributes)) {
         let gene_list = [];
         if (user_code in user_code_names_dict) {
-            const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
+            // const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
+
+            const gene_utterances = await utterances_repository.getAllGeneUtterances(); // maximize gene coverage
             console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
                 + ` gene_utterances len: ${gene_utterances.length}`);
-            gene_list = await genes_repository.get_generif_list(gene_utterances);
+            gene_list = await genes_repository.get_gene_ccds_list(gene_utterances, QUIZ_PROMPTS_PER_SESSION, 1);
+
         } else {
-            gene_list = genes_repository.get_rand_gene_list();
+            gene_list = genes_repository.get_rand_gene_list(QUIZ_PROMPTS_PER_SESSION, 3);
         }
 
         sessionAttributes['gene_list'] = gene_list;
@@ -53,7 +56,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
 
     } else {
         const gene_quiz_item = remaining_genes.shift();
-        const completed_items = 60 - remaining_genes.length - 1;
+        const completed_items = QUIZ_PROMPTS_PER_SESSION - remaining_genes.length - 1;
         console.info(`GeneQuiz response builder | remaining_genes: ${remaining_genes},` +
             `gene_quiz_item: ${gene_quiz_item}`);
 
@@ -66,7 +69,7 @@ const gene_quiz_response_builder = async function (handlerInput) {
                 `${completed_items}.  ${gene_quiz_item}`);
 
         } else {
-            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/60`;
+            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/${QUIZ_PROMPTS_PER_SESSION}`;
             handlerInput.responseBuilder.addDirective({
                 type: 'Alexa.Presentation.APL.RenderDocument',
                 token: 'pagerToken',
@@ -178,7 +181,7 @@ const cancer_quiz_response_builder = function (handlerInput) {
     let quizResponse = {};
 
     if (!('cancer_list' in sessionAttributes)) {
-        let cancer_list = cancer_repository.get_rand_cancer_list();
+        let cancer_list = cancer_repository.get_rand_cancer_list(QUIZ_PROMPTS_PER_SESSION, 1);
         sessionAttributes['cancer_list'] = cancer_list;
     }
 
@@ -193,16 +196,18 @@ const cancer_quiz_response_builder = function (handlerInput) {
 
     } else {
         const cancer_quiz_item = remaining_cancers.shift();
+        const completed_items = QUIZ_PROMPTS_PER_SESSION - remaining_cancers.length - 1;
         console.log(`Inside CancerQuiz | remaining_cancers: ${remaining_cancers},` +
             `cancer_quiz_item: ${cancer_quiz_item}`);
         sessionAttributes['cancer_quiz_item'] = cancer_quiz_item;
         speech.say(promptText);
         if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
             speech.pause('1s');
-            responseBuilder.withSimpleCard(`Cancer Quiz | UID - ${user_code}`, cancer_quiz_item);
+            responseBuilder.withSimpleCard(`Cancer Quiz | UID: ${user_code}`,
+                `${completed_items}.  ${cancer_quiz_item}`);
 
         } else {
-            let footer_text = `User ID - ${user_code}`;
+            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/${QUIZ_PROMPTS_PER_SESSION}`;
             handlerInput.responseBuilder.addDirective({
                 type: 'Alexa.Presentation.APL.RenderDocument',
                 token: 'pagerToken',
