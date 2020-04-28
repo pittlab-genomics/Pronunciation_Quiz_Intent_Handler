@@ -1,4 +1,4 @@
-var _ = require('lodash');
+const _ = require('lodash');
 const {
     gene_quiz_response_builder,
     cancer_quiz_response_builder,
@@ -21,19 +21,16 @@ const UserIdentifierIntentHandler = {
         const responseBuilder = handlerInput.responseBuilder;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         const user_code = _.get(sessionAttributes, 'user_code');
+        console.debug(`[UserIdentifierIntentHandler] user_code: ${user_code}`);
 
-        if (!_.isNil(user_code)) { // check whether a session has already started
-            console.info(`[UserIdentifierIntentHandler] quiz already started | user_code: ${user_code}`);
+        if (!_.has(request, 'dialogState')) {
             return responseBuilder
-                .speak("Gene quiz has already started.")
+                .speak("You've accidentally triggered user identifier intent.")
                 .getResponse();
-        }
 
-        // delegate to Alexa to collect all the required slots 
-        const currentIntent = request.intent;
-        if (request.dialogState && request.dialogState !== 'COMPLETED') {
+        } else if (request.dialogState !== 'COMPLETED') { // delegate to Alexa to collect all the required slots 
             return handlerInput.responseBuilder
-                .addDelegateDirective(currentIntent)
+                .addDelegateDirective(request.intent)
                 .getResponse();
         }
 
@@ -46,6 +43,12 @@ const UserIdentifierIntentHandler = {
         if (slotValues.user_identifier.heardAs && quiz) {
             const user_code = slotValues.user_identifier.heardAs;
             sessionAttributes['user_code'] = parseInt(user_code, 10);
+
+            // remove gene_list if already populated (this is a new quiz round)
+            // this scenario could happen if a user decides to change the user code given previously
+            if (_.has(sessionAttributes, 'gene_list')) {
+                delete sessionAttributes['gene_list'];
+            }
             handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
             if (quiz === 'GENE_QUIZ') {
