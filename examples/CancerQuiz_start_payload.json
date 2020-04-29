@@ -7,7 +7,8 @@
             "applicationId": "xxx"
         },
         "attributes": {
-            "quiz": "CANCER_QUIZ"
+            "quiz": "CANCER_QUIZ",
+            "quiz_referrer": "CancerQuizIntent"
         },
         "user": {
             "userId": "xxx"

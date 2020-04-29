@@ -11,7 +11,8 @@ const {
     CancerQuizIntentHandler,
     TestQuizIntentHandler,
     AnswerIntentHandler,
-    UserIdentifierIntentHandler
+    UserIdentifierIntentHandler,
+    RepeatQuizIntentHandler
 } = require('./skill_handlers/quiz_handler.js');
 const {
     ExpertAnswerIntentHandler,
@@ -127,6 +128,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         CancerQuizIntentHandler,
         TestQuizIntentHandler,
         AnswerIntentHandler,
+        RepeatQuizIntentHandler,
         SearchGeneIntentHandler,
         ExpertAnswerIntentHandler,
         StartExpertAnswerIntentHandler,

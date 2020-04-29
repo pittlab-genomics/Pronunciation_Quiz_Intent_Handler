@@ -7,8 +7,12 @@
             "applicationId": "xxx"
         },
         "attributes": {
-            "quiz": "GENE_QUIZ",
-            "quiz_referrer": "GeneQuizIntent"
+            "quiz": "CANCER_QUIZ",
+            "cancer_quiz_item": "TEST_CANCER",
+            "cancer_list": [
+
+            ],
+            "user_code": 0
         },
         "user": {
             "userId": "xxx"
@@ -77,18 +81,15 @@
         "requestId": "xxx",
         "timestamp": "2019-08-13T07:51:25Z",
         "locale": "en-US",
-		"intent": {
-			"name": "UserIdentifierIntent",
-			"confirmationStatus": "NONE",
-			"slots": {
-				"user_identifier": {
-					"name": "user_identifier",
-					"value": "0000",
-					"confirmationStatus": "NONE",
-					"source": "USER"
-				}
-			}
-		},
-		"dialogState": "COMPLETED"
+        "intent": {
+            "name": "RepeatQuizIntent",
+            "confirmationStatus": "NONE",
+            "slots": {
+                "quiz_answer_query": {
+                    "value": "Liver cancer"
+                }
+            }
+        },
+        "dialogState": "COMPLETED"
     }
 }
