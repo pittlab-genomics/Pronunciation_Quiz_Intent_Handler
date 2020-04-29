@@ -4,15 +4,11 @@ var _ = require('lodash');
 const genes_repository = require("../dao/genes_repository");
 const cancer_repository = require("../dao/cancer_repository.js");
 const utterances_repository = require('../dao/utterances_repository.js');
-const { supportsAPL } = require("../common/util.js")
+const { populate_quiz_display, populate_display } = require("../common/util.js")
 const { user_code_names_dict, QUIZ_PROMPTS_PER_SESSION } = require('../common/config.js');
 
-const APLDocs = {
-    quiz_card: require('../../resources/APL/quiz_card.json'),
-};
 
-
-const gene_quiz_response_builder = async function (handlerInput) {
+const gene_quiz_response_builder = async function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes['user_code'];
@@ -55,35 +51,20 @@ const gene_quiz_response_builder = async function (handlerInput) {
         };
 
     } else {
-        const gene_quiz_item = remaining_genes.shift();
-        const completed_items = QUIZ_PROMPTS_PER_SESSION - remaining_genes.length - 1;
+        let gene_quiz_item = '';
+        if (repeat_only) {
+            gene_quiz_item = _.get(sessionAttributes, 'gene_quiz_item');
+        } else {
+            gene_quiz_item = remaining_genes.shift();
+        }
+
         console.info(`GeneQuiz response builder | remaining_genes: ${remaining_genes},` +
             `gene_quiz_item: ${gene_quiz_item}`);
 
         sessionAttributes['gene_quiz_item'] = gene_quiz_item;
         speech.say(promptText);
 
-        if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
-            speech.pause('1s');
-            responseBuilder.withSimpleCard(`Gene Quiz | UID: ${user_code}`,
-                `${completed_items}.  ${gene_quiz_item}`);
-
-        } else {
-            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/${QUIZ_PROMPTS_PER_SESSION}`;
-            handlerInput.responseBuilder.addDirective({
-                type: 'Alexa.Presentation.APL.RenderDocument',
-                token: 'pagerToken',
-                version: '1.0',
-                document: APLDocs.quiz_card,
-                datasources: {
-                    'templateData': {
-                        'title': 'Gene Quiz',
-                        'quiz_item': gene_quiz_item,
-                        'footer_text': footer_text
-                    },
-                },
-            });
-        }
+        populate_quiz_display(handlerInput, 'Gene Quiz', user_code, remaining_genes.length, gene_quiz_item);
 
         quizResponse = {
             "speechText": speech.ssml(true),
@@ -141,6 +122,8 @@ const process_gene_quiz_answer = function (handlerInput) {
                 responseBuilder.withShouldEndSession(true);
                 speech.say("Thank you for taking the gene quiz. Bye!");
                 const speechText = speech.ssml();
+
+                populate_quiz_display(handlerInput, 'Gene Quiz', user_code, 0, 'Thank you!');
                 return responseBuilder
                     .speak(speechText);
 
@@ -164,7 +147,7 @@ const process_gene_quiz_answer = function (handlerInput) {
         });
 };
 
-const cancer_quiz_response_builder = function (handlerInput) {
+const cancer_quiz_response_builder = function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes['user_code'];
@@ -186,7 +169,7 @@ const cancer_quiz_response_builder = function (handlerInput) {
     }
 
     const remaining_cancers = sessionAttributes['cancer_list'];
-    if (remaining_cancers.length == 0) {
+    if (!repeat_only && remaining_cancers.length == 0) {
         console.error(`Invalid state in CancerQuiz | remaining_cancers: ${remaining_cancers}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
@@ -195,33 +178,19 @@ const cancer_quiz_response_builder = function (handlerInput) {
         };
 
     } else {
-        const cancer_quiz_item = remaining_cancers.shift();
-        const completed_items = QUIZ_PROMPTS_PER_SESSION - remaining_cancers.length - 1;
+        let cancer_quiz_item = '';
+        if (repeat_only) {
+            cancer_quiz_item = _.get(sessionAttributes, 'cancer_quiz_item');
+        } else {
+            cancer_quiz_item = remaining_cancers.shift();
+        }
+
         console.log(`Inside CancerQuiz | remaining_cancers: ${remaining_cancers},` +
             `cancer_quiz_item: ${cancer_quiz_item}`);
         sessionAttributes['cancer_quiz_item'] = cancer_quiz_item;
         speech.say(promptText);
-        if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
-            speech.pause('1s');
-            responseBuilder.withSimpleCard(`Cancer Quiz | UID: ${user_code}`,
-                `${completed_items}.  ${cancer_quiz_item}`);
 
-        } else {
-            const footer_text = `User ID: ${user_code} | Progress: ${completed_items}/${QUIZ_PROMPTS_PER_SESSION}`;
-            handlerInput.responseBuilder.addDirective({
-                type: 'Alexa.Presentation.APL.RenderDocument',
-                token: 'pagerToken',
-                version: '1.0',
-                document: APLDocs.quiz_card,
-                datasources: {
-                    'templateData': {
-                        'title': 'Cancer Quiz',
-                        'quiz_item': cancer_quiz_item,
-                        'footer_text': footer_text
-                    },
-                },
-            });
-        }
+        populate_quiz_display(handlerInput, 'Cancer Quiz', user_code, remaining_cancers.length, cancer_quiz_item);
 
         quizResponse = {
             "speechText": speech.ssml(true),
@@ -277,6 +246,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
                 responseBuilder.withShouldEndSession(true);
                 speech.say("Thank you for taking the cancer quiz. Bye!");
                 const speechText = speech.ssml();
+                populate_quiz_display(handlerInput, 'Cancer Quiz', user_code, 0, 'Thank you!');
                 return responseBuilder.speak(speechText);
 
             } else {
@@ -301,9 +271,6 @@ const process_cancer_quiz_answer = async function (handlerInput) {
 };
 
 const test_quiz_response_builder = function (handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const responseBuilder = handlerInput.responseBuilder;
-
     let promptText = "What is your query?";
     let repromptText = "Please provide your query";
     let speech = new Speech();
@@ -311,30 +278,13 @@ const test_quiz_response_builder = function (handlerInput) {
     let last_utterance = '-';
     const footer_text = 'Alexa, show me Petrificus Totalus!';
 
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     if (!_.isEmpty(sessionAttributes['last_utterance'])) {
         last_utterance = sessionAttributes['last_utterance'];
     }
 
     speech.say(promptText);
-    if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
-        speech.pause('1s');
-        responseBuilder.withSimpleCard('Test Quiz', last_utterance);
-
-    } else {
-        handlerInput.responseBuilder.addDirective({
-            type: 'Alexa.Presentation.APL.RenderDocument',
-            token: 'pagerToken',
-            version: '1.0',
-            document: APLDocs.quiz_card,
-            datasources: {
-                'templateData': {
-                    'title': 'Test Quiz',
-                    'quiz_item': last_utterance,
-                    'footer_text': footer_text
-                },
-            },
-        });
-    }
+    populate_display(handlerInput, 'Test Quiz', last_utterance, footer_text);
 
     quizResponse = {
         "speechText": speech.ssml(true),
