@@ -27,8 +27,6 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
     if (!('gene_list' in sessionAttributes)) {
         let gene_list = [];
         if (user_code in user_code_names_dict) {
-            // const gene_utterances = await utterances_repository.getAllGeneUtterancesByUser(user_code);
-
             const gene_utterances = await utterances_repository.getAllGeneUtterances(); // maximize gene coverage
             console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
                 + ` gene_utterances len: ${gene_utterances.length}`);

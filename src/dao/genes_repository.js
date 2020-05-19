@@ -47,7 +47,7 @@ function get_rand_gene_list(count, repeat) {
     // Create a new array with only the first N distinct items
     const N = Math.floor(count / repeat);
     const shuffled_list = shuffle(gene_list_top_723).slice(0, N);
-    
+
     // repeat each gene for each session
     const rand_gene_list = [];
     shuffled_list.forEach(function (gene_name) {
@@ -101,11 +101,15 @@ async function get_gene_ccds_list(gene_utterances, count, repeat) {
     let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
 
     // Create utterances_items out of utterances_dict array for sorting
-    let utterances_items = Object.keys(utterances_dict).map(function (key) {
-        return [key, utterances_dict[key]];
-    });
+    let utterances_items = Object.keys(utterances_dict)
+        .filter((val, index) => {
+            return genes_CCDS_list.includes(index);
+        })
+        .map(function (key) {
+            return [key, utterances_dict[key]];
+        });
 
-    // Add all items in top_723 gene list (those that do not have any recordings yet)
+    // Add items in CCDS gene list that do not have any recordings yet
     const genes_without_utterances = [];
     genes_CCDS_list.forEach(function (top_gene) {
         if (_.isNil(utterances_dict[top_gene])) {
@@ -118,11 +122,13 @@ async function get_gene_ccds_list(gene_utterances, count, repeat) {
     all_utterances_items.sort(function (first, second) {
         return first[1] - second[1];
     });
+    console.debug(`[get_gene_ccds_list] utterances_dict.len: ${Object.keys(utterances_dict).length}, `
+        + `sorted all_utterances_items.len: ${JSON.stringify(all_utterances_items.length)}`);
 
     // Create a new array with only the first N distinct items
     const N = Math.floor(count / repeat);
     let least_recorded_items = all_utterances_items.slice(0, N);
-    console.log(`[get_gene_list] least_recorded_items: ${JSON.stringify(least_recorded_items)}`);
+    console.log(`[get_gene_ccds_list] least_recorded_items: ${JSON.stringify(least_recorded_items)}`);
 
     let least_recorded_genes = shuffle(least_recorded_items.map(item => item[0]));
 
