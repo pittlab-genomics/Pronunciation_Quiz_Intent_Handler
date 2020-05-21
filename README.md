@@ -42,9 +42,12 @@ serverless invoke local --function dashboard_stats --data '{"queryStringParamete
 serverless invoke local --function dashboard_stats --data '{"queryStringParameters":{"start_date": "2020-01-19"}}'
 
 serverless invoke local --function gene_utterances_list
+serverless invoke local --function gene_utterances_list --data '{"queryStringParameters":{"gene_list": "CCDS"}}'
 
 serverless invoke local --function gene_utterances_stats
 serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19"}}'
+serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "gene_list": "CCDS"}}'
+serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "gene_list": "GENERIF"}}'
 serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"user_code": "0000"}}'
 serverless invoke local --function gene_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "user_code": "0000"}}'
 

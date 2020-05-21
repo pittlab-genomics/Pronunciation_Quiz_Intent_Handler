@@ -15,9 +15,9 @@ async function get_gene_list(gene_utterances, count, repeat) {
 
     // Add all items in top_723 gene list (those that do not have any recordings yet)
     const genes_without_utterances = [];
-    gene_list_top_723.forEach(function (top_gene) {
-        if (_.isNil(utterances_dict[top_gene])) {
-            genes_without_utterances.push([top_gene, 0]);
+    gene_list_top_723.forEach(function (item) {
+        if (_.isNil(utterances_dict[item])) {
+            genes_without_utterances.push([item, 0]);
         }
     });
     const all_utterances_items = [...utterances_items, ...genes_without_utterances];
@@ -62,15 +62,15 @@ async function get_generif_list(gene_utterances, count, repeat) {
     let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
 
     // Create utterances_items out of utterances_dict array for sorting
-    let utterances_items = Object.keys(utterances_dict).map(function (key) {
-        return [key, utterances_dict[key]];
-    });
+    let utterances_items = Object.entries(utterances_dict)
+        .filter(([key, val]) => genes_CCDS_list.includes(key))
+        .map(([key, val]) => ([key, val]));
 
     // Add all items in top_723 gene list (those that do not have any recordings yet)
     const genes_without_utterances = [];
-    gene_list_GENERIF_top50.forEach(function (top_gene) {
-        if (_.isNil(utterances_dict[top_gene])) {
-            genes_without_utterances.push([top_gene, 0]);
+    gene_list_GENERIF_top50.forEach(function (item) {
+        if (_.isNil(utterances_dict[item])) {
+            genes_without_utterances.push([item, 0]);
         }
     });
     const all_utterances_items = [...utterances_items, ...genes_without_utterances];
@@ -101,19 +101,15 @@ async function get_gene_ccds_list(gene_utterances, count, repeat) {
     let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
 
     // Create utterances_items out of utterances_dict array for sorting
-    let utterances_items = Object.keys(utterances_dict)
-        .filter((val, index) => {
-            return genes_CCDS_list.includes(index);
-        })
-        .map(function (key) {
-            return [key, utterances_dict[key]];
-        });
+    let utterances_items = Object.entries(utterances_dict)
+        .filter(([key, val]) => genes_CCDS_list.includes(key))
+        .map(([key, val]) => ([key, val]));
 
     // Add items in CCDS gene list that do not have any recordings yet
     const genes_without_utterances = [];
-    genes_CCDS_list.forEach(function (top_gene) {
-        if (_.isNil(utterances_dict[top_gene])) {
-            genes_without_utterances.push([top_gene, 0]);
+    genes_CCDS_list.forEach(function (item) {
+        if (_.isNil(utterances_dict[item])) {
+            genes_without_utterances.push([item, 0]);
         }
     });
     const all_utterances_items = [...utterances_items, ...genes_without_utterances];
