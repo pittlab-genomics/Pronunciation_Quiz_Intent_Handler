@@ -6,7 +6,7 @@ const cancer_repository = require("../dao/cancer_repository.js");
 const utterances_repository = require('../dao/utterances_repository.js');
 const { populate_quiz_display, populate_display } = require("../common/util.js")
 const { user_code_names_dict, QUIZ_PROMPTS_PER_SESSION } = require('../common/config.js');
-
+const { get_oov_mapping_by_query } = require('../http_clients/oov_mapper_client.js');
 
 const gene_quiz_response_builder = async function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -273,16 +273,25 @@ const test_quiz_response_builder = function (handlerInput) {
     let repromptText = "Please provide your query";
     let speech = new Speech();
     let quizResponse = {};
-    let last_utterance = '-';
+    let last_utterance = '';
+    let oov_text = '';
     const footer_text = 'Alexa, show me Petrificus Totalus!';
 
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     if (!_.isEmpty(sessionAttributes['last_utterance'])) {
         last_utterance = sessionAttributes['last_utterance'];
     }
-
+    if (!_.isEmpty(sessionAttributes['oov_response'])) {
+        oov_response = sessionAttributes['oov_response'];
+        oov_entity_type = _.get(oov_response, "data.entity_type");
+        oov_entity_value = _.get(oov_response, "data.entity_data.value");
+        oov_model = _.get(oov_response, "data.from");
+        oov_text = ` entity_type: ${oov_entity_type}\n entity_value: ${oov_entity_value}\n model: ${oov_model}`;
+    }
+    
+    const item_text = `query: ${last_utterance}\n\n${oov_text}`;
     speech.say(promptText);
-    populate_display(handlerInput, 'Test Quiz', last_utterance, footer_text);
+    populate_display(handlerInput, 'Test Quiz', item_text, footer_text);
 
     quizResponse = {
         "speechText": speech.ssml(true),
@@ -291,7 +300,7 @@ const test_quiz_response_builder = function (handlerInput) {
     return quizResponse;
 };
 
-const process_test_quiz_answer = function (handlerInput) {
+const process_test_quiz_answer = async function (handlerInput) {
     const speech = new Speech();
     const responseBuilder = handlerInput.responseBuilder;
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -308,9 +317,16 @@ const process_test_quiz_answer = function (handlerInput) {
     // store the utterance as the last recorded answer in session
     sessionAttributes['last_utterance'] = test_utterance;
 
+    // resolve genomic entity using OOV mapper
+    const oov_params = {"query": test_utterance};
+    const oov_response = await get_oov_mapping_by_query(oov_params);
+    sessionAttributes['oov_response'] = oov_response;
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
     let params = {
         'user_id': _.get(handlerInput, 'requestEnvelope.context.System.user.userId'),
         'utterance': test_utterance,
+        'oov_response': oov_response,
         'device_id': _.get(handlerInput, 'requestEnvelope.context.System.device.deviceId'),
         'session_id': _.get(handlerInput, 'requestEnvelope.session.sessionId'),
         'request_id': _.get(handlerInput, 'requestEnvelope.request.requestId'),

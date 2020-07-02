@@ -97,9 +97,10 @@ function groupItemsCountLabeled(data, attribute_name) {
 
 function populate_display(handlerInput, title, item_text, footer_text) {
     if (!supportsAPL(handlerInput)) { // leave some time to read the card when showing in mobile devices
-        handlerInput.responseBuilder.withSimpleCard('Test Quiz', item_text);
+        handlerInput.responseBuilder.withSimpleCard(title, item_text);
 
     } else {
+        item_text = item_text.replace(/\n/g, "<br/>");
         handlerInput.responseBuilder.addDirective({
             type: 'Alexa.Presentation.APL.RenderDocument',
             token: 'pagerToken',
