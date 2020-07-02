@@ -11,5 +11,6 @@ const QUIZ_PROMPTS_PER_SESSION = 60;
 module.exports = {
     melvin_endpoint: process.env.MELVIN_REST_API_ENDPOINT,
     user_code_names_dict,
-    QUIZ_PROMPTS_PER_SESSION
+    QUIZ_PROMPTS_PER_SESSION,
+    OOV_MAPPER_ENDPOINT: process.env.OOV_MAPPER_ENDPOINT,
 }

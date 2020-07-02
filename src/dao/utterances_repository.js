@@ -157,7 +157,7 @@ utterances_repository.prototype.getFilteredGeneUtterances = async function (even
     }
 
     all_utterances_list = await scanEntireTable(scan_params);
-    console.info(`[getAllGeneUtterances] dataset length: ${all_utterances_list.length}`)
+    console.info(`[getFilteredGeneUtterances] dataset length: ${all_utterances_list.length}`)
     return all_utterances_list;
 }
 
@@ -191,7 +191,7 @@ utterances_repository.prototype.getFilteredCancerUtterances = async function (ev
     }
 
     all_utterances_list = await scanEntireTable(scan_params);
-    console.info(`[getAllCancerUtterances] dataset length: ${all_utterances_list.length}`)
+    console.info(`[getFilteredCancerUtterances] dataset length: ${all_utterances_list.length}`)
     return all_utterances_list;
 }
 
