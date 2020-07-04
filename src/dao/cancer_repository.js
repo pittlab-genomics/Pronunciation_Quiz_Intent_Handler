@@ -1,4 +1,4 @@
-const { shuffle } = require('../common/util.js')
+const { shuffle } = require("../common/util.js");
 
 const cancer_list = [
     "Acute Myeloid Leukemia",
@@ -118,10 +118,10 @@ function get_rand_cancer_list(count, repeat) {
     const N = Math.floor(count / repeat);
     const shuffled_list = shuffle(cancer_list).slice(0, N);
 
-    // repeat each cancer_name for each session
+    // repeat each item for each session
     const rand_cancer_list = [];
-    shuffled_list.forEach(function (cancer_name) {
-        rand_cancer_list.push(...Array.from({ length: repeat }).map(x => cancer_name));
+    shuffled_list.forEach(function (item) {
+        rand_cancer_list.push(...Array.from({ length: repeat }).map(item));
     });
     return shuffle(rand_cancer_list);
 }
@@ -129,4 +129,4 @@ function get_rand_cancer_list(count, repeat) {
 module.exports = {
     get_cancer_list,
     get_rand_cancer_list
-}
+};

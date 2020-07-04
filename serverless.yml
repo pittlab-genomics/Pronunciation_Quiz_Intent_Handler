@@ -1,4 +1,4 @@
-service: gene-quiz-alexa-skill-intent-handler
+service: gene-quiz-ask-handler
 
 frameworkVersion: ">=1.4.0 <2.0.0"
 
@@ -40,6 +40,17 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_CANCER_UTTERANCES}"
+
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_CATEGORY_UTTERANCES}"
 
     - Effect: Allow
       Action:

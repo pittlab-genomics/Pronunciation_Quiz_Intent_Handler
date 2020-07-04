@@ -1,6 +1,7 @@
 environment:
   DYNAMODB_TABLE_GENE_UTTERANCES: quiz-gene-utterances-${self:provider.stage}
   DYNAMODB_TABLE_CANCER_UTTERANCES: quiz-cancer-utterances-${self:provider.stage}
+  DYNAMODB_TABLE_CATEGORY_UTTERANCES: quiz-category-utterances-${self:provider.stage}
   DYNAMODB_TABLE_EXPERT_UTTERANCES: quiz-expert-utterances-${self:provider.stage}
   DYNAMODB_TABLE_TEST_UTTERANCES: quiz-test-utterances-${self:provider.stage}
   S3_BUCKET_EXPERT_AUDIO: ${self:service}-expert-audio-${self:provider.stage}

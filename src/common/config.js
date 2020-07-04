@@ -13,4 +13,4 @@ module.exports = {
     user_code_names_dict,
     QUIZ_PROMPTS_PER_SESSION,
     OOV_MAPPER_ENDPOINT: process.env.OOV_MAPPER_ENDPOINT,
-}
+};

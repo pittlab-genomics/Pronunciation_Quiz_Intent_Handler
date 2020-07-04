@@ -1,12 +1,12 @@
-var _ = require('lodash');
-const { gene_list_top_723 } = require('./genes_top_723.js');
-const { gene_list_GENERIF_top50 } = require('./gene_list_GENERIF_top50.js');
-const { genes_CCDS_list } = require('./genes_CCDS_list.js');
-const { shuffle, groupItemsCount } = require('../common/util.js')
+var _ = require("lodash");
+const { gene_list_top_723 } = require("./genes_top_723.js");
+const { gene_list_GENERIF_top50 } = require("./gene_list_GENERIF_top50.js");
+const { genes_CCDS_list } = require("./genes_CCDS_list.js");
+const { shuffle, groupItemsCount } = require("../common/util.js");
 
 async function get_gene_list(gene_utterances, count, repeat) {
     // Count the number of utterances for each gene name
-    let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
+    let utterances_dict = groupItemsCount(gene_utterances, "gene_name");
 
     // Create utterances_items out of utterances_dict array for sorting
     let utterances_items = Object.keys(utterances_dict).map(function (key) {
@@ -37,7 +37,7 @@ async function get_gene_list(gene_utterances, count, repeat) {
     // repeat each gene for each session
     const gene_list = [];
     least_recorded_genes.forEach(function (gene_name) {
-        gene_list.push(...Array.from({ length: repeat }).map(x => gene_name));
+        gene_list.push(...Array.from({ length: repeat }).map(gene_name));
     });
 
     return gene_list;
@@ -51,7 +51,7 @@ function get_rand_gene_list(count, repeat) {
     // repeat each gene for each session
     const rand_gene_list = [];
     shuffled_list.forEach(function (gene_name) {
-        rand_gene_list.push(...Array.from({ length: repeat }).map(x => gene_name));
+        rand_gene_list.push(...Array.from({ length: repeat }).map(gene_name));
     });
 
     return rand_gene_list;
@@ -59,11 +59,11 @@ function get_rand_gene_list(count, repeat) {
 
 async function get_generif_list(gene_utterances, count, repeat) {
     // Count the number of utterances for each gene name
-    let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
+    let utterances_dict = groupItemsCount(gene_utterances, "gene_name");
 
     // Create utterances_items out of utterances_dict array for sorting
     let utterances_items = Object.entries(utterances_dict)
-        .filter(([key, val]) => genes_CCDS_list.includes(key))
+        .filter(([key, _ignored]) => genes_CCDS_list.includes(key))
         .map(([key, val]) => ([key, val]));
 
     // Add all items in top_723 gene list (those that do not have any recordings yet)
@@ -90,7 +90,7 @@ async function get_generif_list(gene_utterances, count, repeat) {
     // repeat each gene for each session
     const gene_list = [];
     least_recorded_genes.forEach(function (gene_name) {
-        gene_list.push(...Array.from({ length: repeat }).map(x => gene_name));
+        gene_list.push(...Array.from({ length: repeat }).map(gene_name));
     });
 
     return gene_list;
@@ -98,11 +98,11 @@ async function get_generif_list(gene_utterances, count, repeat) {
 
 async function get_gene_ccds_list(gene_utterances, count, repeat) {
     // Count the number of utterances for each gene name
-    let utterances_dict = groupItemsCount(gene_utterances, 'gene_name');
+    let utterances_dict = groupItemsCount(gene_utterances, "gene_name");
 
     // Create utterances_items out of utterances_dict array for sorting
     let utterances_items = Object.entries(utterances_dict)
-        .filter(([key, val]) => genes_CCDS_list.includes(key))
+        .filter(([key, _ignored]) => genes_CCDS_list.includes(key))
         .map(([key, val]) => ([key, val]));
 
     // Add items in CCDS gene list that do not have any recordings yet
@@ -131,7 +131,7 @@ async function get_gene_ccds_list(gene_utterances, count, repeat) {
     // repeat each gene for each session
     const gene_list = [];
     least_recorded_genes.forEach(function (gene_name) {
-        gene_list.push(...Array.from({ length: repeat }).map(x => gene_name));
+        gene_list.push(...Array.from({ length: repeat }).map(gene_name));
     });
 
     return gene_list;
@@ -142,4 +142,4 @@ module.exports = {
     get_rand_gene_list,
     get_generif_list,
     get_gene_ccds_list
-}
+};

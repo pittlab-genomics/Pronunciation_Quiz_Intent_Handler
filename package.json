@@ -1,5 +1,5 @@
 {
-  "name": "gene-quiz-alexa-skill-intent-handler",
+  "name": "gene-quiz-ask-handler",
   "version": "1.0.0",
   "description": "AWS Lambda function for Gene Quiz Alexa Skill.",
   "author": "",
@@ -16,6 +16,8 @@
     "moment": "^2.24.0"
   },
   "devDependencies": {
+    "eslint": "^7.3.1",
+    "eslint-config-google": "^0.14.0",
     "serverless-plugin-include-dependencies": "^3.2.1",
     "serverless-prune-plugin": "^1.4.0"
   }

@@ -15,4 +15,4 @@ const ResponseLogInterceptor = {
 module.exports = {
     RequestLogInterceptor,
     ResponseLogInterceptor
-}
+};

@@ -143,4 +143,4 @@ module.exports = {
     gene_list_4,
     gene_list_5,
     gene_list_6
-}
+};
