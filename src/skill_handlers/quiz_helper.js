@@ -6,13 +6,14 @@ const cancer_repository = require("../dao/cancer_repository.js");
 const category_repository = require("../dao/category_repository.js");
 const utterances_repository = require("../dao/utterances_repository.js");
 const { populate_quiz_display, populate_display } = require("../common/util.js");
-const { user_code_names_dict, QUIZ_PROMPTS_PER_SESSION } = require("../common/config.js");
+const { user_code_names_dict, GENE_QUIZ_PROMPTS_PER_SESSION } = require("../common/config.js");
 const { get_oov_mapping_by_query } = require("../http_clients/oov_mapper_client.js");
 
 const gene_quiz_response_builder = async function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes["user_code"];
+    const gene_prompt_repeats = 1;
 
     if (!_.isNumber(user_code)) {
         console.error(`Invalid state in gene_quiz_response_builder: handlerInput: ${JSON.stringify(handlerInput)}`);
@@ -27,14 +28,15 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
 
     if (!("gene_list" in sessionAttributes)) {
         let gene_list = [];
-        if (user_code in user_code_names_dict) {
-            const gene_utterances = await utterances_repository.getAllGeneUtterances(); // maximize gene coverage
+        if (user_code in user_code_names_dict) { // maximize utterances coverage for known users
+            const gene_utterances = await utterances_repository.getAllGeneUtterances(); 
             console.log(`[gene_quiz_response_builder] user_code: ${user_code},`
                 + ` gene_utterances len: ${gene_utterances.length}`);
-            gene_list = await genes_repository.get_gene_ccds_list(gene_utterances, QUIZ_PROMPTS_PER_SESSION, 1);
+            gene_list = genes_repository.get_gene_ccds_list(gene_utterances, 
+                GENE_QUIZ_PROMPTS_PER_SESSION, gene_prompt_repeats);
 
         } else {
-            gene_list = genes_repository.get_rand_gene_list(QUIZ_PROMPTS_PER_SESSION, 3);
+            gene_list = genes_repository.get_rand_gene_list(GENE_QUIZ_PROMPTS_PER_SESSION, 3);
         }
 
         sessionAttributes["gene_list"] = gene_list;
@@ -42,11 +44,11 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
     }
 
     const remaining_genes = sessionAttributes["gene_list"];
-    if (remaining_genes.length == 0) {
+    if (!repeat_only && remaining_genes.length == 0) {
         console.error(`Invalid state in GeneQuiz | remaining_genes: ${remaining_genes}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "Something went wrong while loading the gene list from the session. Please try again.",
+            "speechText": "There are no items in the gene list. Please check back later.",
             "repromptText": ""
         };
 
@@ -150,7 +152,7 @@ const process_gene_quiz_answer = function (handlerInput) {
         });
 };
 
-const cancer_quiz_response_builder = function (handlerInput, repeat_only = false) {
+const cancer_quiz_response_builder = async function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes["user_code"];
@@ -167,7 +169,17 @@ const cancer_quiz_response_builder = function (handlerInput, repeat_only = false
     let quizResponse = {};
 
     if (!("cancer_list" in sessionAttributes)) {
-        let cancer_list = cancer_repository.get_cancer_list();
+        let cancer_list = [];
+        if (user_code in user_code_names_dict) { // maximize utterances coverage from known users 
+            const cancer_utterances = await utterances_repository.getAllCancerUtterancesByUser(user_code); 
+            console.log(`[cancer_quiz_response_builder] user_code: ${user_code},`
+                + ` cancer_utterances len: ${cancer_utterances.length}`);
+            cancer_list = cancer_repository.get_filtered_cancer_list(cancer_utterances);
+
+        } else {
+            cancer_list = cancer_repository.get_rand_cancer_list();
+        }
+
         sessionAttributes["cancer_list"] = cancer_list;
         sessionAttributes["cancer_list_length"] = cancer_list.length;
     }
@@ -177,7 +189,7 @@ const cancer_quiz_response_builder = function (handlerInput, repeat_only = false
         console.error(`Invalid state in CancerQuiz | remaining_cancers: ${remaining_cancers}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "Something went wrong while loading the cancer list from the session. Please try again.",
+            "speechText": "There are no items in the cancer list. Please check back later.",
             "repromptText": ""
         };
 
@@ -280,7 +292,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
 };
 
 
-const category_quiz_response_builder = function (handlerInput, repeat_only = false) {
+const category_quiz_response_builder = async function (handlerInput, repeat_only = false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes["user_code"];
@@ -297,7 +309,17 @@ const category_quiz_response_builder = function (handlerInput, repeat_only = fal
     let quizResponse = {};
 
     if (!("category_list" in sessionAttributes)) {
-        let category_list = category_repository.get_category_list();
+        let category_list = [];
+        if (user_code in user_code_names_dict) { // maximize utterances coverage from known users 
+            const category_utterances = await utterances_repository.getAllCategoryUtterancesByUser(user_code); 
+            console.log(`[category_quiz_response_builder] user_code: ${user_code},`
+                + ` category_utterances len: ${category_utterances.length}`);
+            category_list = category_repository.get_filtered_category_list(category_utterances);
+
+        } else {
+            category_list = category_repository.get_rand_category_list();
+        }
+
         sessionAttributes["category_list"] = category_list;
         sessionAttributes["category_list_length"] = category_list.length;
     }
@@ -307,7 +329,7 @@ const category_quiz_response_builder = function (handlerInput, repeat_only = fal
         console.error(`Invalid state in CategoryQuiz | remaining_categories: ${remaining_categories}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "Something went wrong while loading the category list from the session. Please try again.",
+            "speechText": "There are no items in the category list. Please check back later.",
             "repromptText": ""
         };
 

@@ -336,6 +336,48 @@ utterances_repository.prototype.getAllGeneUtterancesByUser = async (user_code) =
     return all_utterances_list;
 };
 
+// used to select quiz prompts based on already attempted ones
+utterances_repository.prototype.getAllCancerUtterancesByUser = async (user_code) => {
+    let all_utterances_list = [];
+    console.log(`Querying all cancer utterances for user_code: ${user_code}`);
+    var query_params = {
+        TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+        ProjectionExpression: "cancer_name",
+        KeyConditionExpression: "#user_code = :ucode",
+        ExpressionAttributeNames: {
+            "#user_code": "user_code"
+        },
+        ExpressionAttributeValues: {
+            ":ucode": user_code
+        }
+    };
+
+    all_utterances_list = await queryEntireTable(query_params);
+    console.info(`[getAllCancerUtterancesByUser] dataset length: ${all_utterances_list.length}`);
+    return all_utterances_list;
+};
+
+// used to select quiz prompts based on already attempted ones
+utterances_repository.prototype.getAllCategoryUtterancesByUser = async (user_code) => {
+    let all_utterances_list = [];
+    console.log(`Querying all category utterances for user_code: ${user_code}`);
+    var query_params = {
+        TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
+        ProjectionExpression: "category_name",
+        KeyConditionExpression: "#user_code = :ucode",
+        ExpressionAttributeNames: {
+            "#user_code": "user_code"
+        },
+        ExpressionAttributeValues: {
+            ":ucode": user_code
+        }
+    };
+
+    all_utterances_list = await queryEntireTable(query_params);
+    console.info(`[getAllCategoryUtterancesByUser] dataset length: ${all_utterances_list.length}`);
+    return all_utterances_list;
+};
+
 /*
  * Private functions
  */

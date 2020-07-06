@@ -59,10 +59,10 @@ const UserIdentifierIntentHandler = {
                 quizResponse = await gene_quiz_response_builder(handlerInput);
 
             } else if (quiz === "CANCER_QUIZ") {
-                quizResponse = cancer_quiz_response_builder(handlerInput);
+                quizResponse = await cancer_quiz_response_builder(handlerInput);
 
             } else if (quiz === "CATEGORY_QUIZ") {
-                quizResponse = category_quiz_response_builder(handlerInput);
+                quizResponse = await category_quiz_response_builder(handlerInput);
 
             } else {
                 console.error("[UserIdentifierIntentHandler] session attribute quiz is invalid: " +
@@ -101,10 +101,10 @@ const RepeatQuizIntentHandler = {
             quizResponse = await gene_quiz_response_builder(handlerInput, true);
 
         } else if (quiz === "CANCER_QUIZ") {
-            quizResponse = cancer_quiz_response_builder(handlerInput, true);
+            quizResponse = await cancer_quiz_response_builder(handlerInput, true);
 
         } else if (quiz === "CATEGORY_QUIZ") {
-            quizResponse = cancer_quiz_response_builder(handlerInput, true);
+            quizResponse = await cancer_quiz_response_builder(handlerInput, true);
 
         } else {
             console.error("[RepeatQuizIntentHandler] session attribute quiz is invalid: " + 
