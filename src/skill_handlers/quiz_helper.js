@@ -77,6 +77,7 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
     }
     console.info(`GeneQuiz response builder | quizResponse: ${JSON.stringify(quizResponse)}`);
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    console.info(`[gene_quiz_response_builder] quizResponse: ${JSON.stringify(quizResponse)}`);
     return quizResponse;
 };
 
@@ -133,10 +134,9 @@ const process_gene_quiz_answer = function (handlerInput) {
                     .speak(speechText);
 
             } else {
-                let quizResponse = await gene_quiz_response_builder(handlerInput);
+                const quizResponse = await gene_quiz_response_builder(handlerInput);
+                console.info(`[process_gene_quiz_answer] quizResponse: ${JSON.stringify(quizResponse)}`);
                 speech.prosody({ rate: "fast" }, "Ok");
-                // speech.pause('500ms');
-                // speech.sayWithSSML(quizResponse.speechText);
                 const speechText = speech.ssml();
                 return responseBuilder
                     .speak(speechText)
@@ -152,7 +152,7 @@ const process_gene_quiz_answer = function (handlerInput) {
         });
 };
 
-const cancer_quiz_response_builder = async function (handlerInput, repeat_only = false) {
+const cancer_quiz_response_builder = async function (handlerInput, repeat_only=false) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const responseBuilder = handlerInput.responseBuilder;
     const user_code = sessionAttributes["user_code"];
@@ -163,9 +163,9 @@ const cancer_quiz_response_builder = async function (handlerInput, repeat_only =
             .speak("Something went wrong while retrieving the quiz card. Please try again.");
     }
 
-    let promptText = "How would you pronounce this cancer name?";
-    let repromptText = "Please pronounce the cancer name on the screen.";
-    let speech = new Speech();
+    const promptText = "How would you pronounce this cancer name?";
+    const repromptText = "Please pronounce the cancer name on the screen.";
+    const speech = new Speech();
     let quizResponse = {};
 
     if (!("cancer_list" in sessionAttributes)) {
@@ -215,7 +215,9 @@ const cancer_quiz_response_builder = async function (handlerInput, repeat_only =
             "repromptText": repromptText
         };
     }
+
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    console.info(`[cancer_quiz_response_builder] quizResponse: ${JSON.stringify(quizResponse)}`);
     return quizResponse;
 };
 
@@ -258,7 +260,7 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     };
 
     return utterances_repository.addCancerUtterance(params)
-        .then((data) => {
+        .then(async (data) => {
             console.log(`Cancer utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
 
             if (remaining_cancers.length == 0) {
@@ -271,10 +273,9 @@ const process_cancer_quiz_answer = async function (handlerInput) {
                 return responseBuilder.speak(speechText);
 
             } else {
-                let quizResponse = cancer_quiz_response_builder(handlerInput);
+                const quizResponse = await cancer_quiz_response_builder(handlerInput);
+                console.info(`[process_cancer_quiz_answer] quizResponse: ${JSON.stringify(quizResponse)}`);
                 speech.prosody({ rate: "fast" }, "Ok");
-                // speech.pause('500ms');
-                // speech.sayWithSSML(quizResponse.speechText);
                 const speechText = speech.ssml();
 
                 return responseBuilder
@@ -303,9 +304,9 @@ const category_quiz_response_builder = async function (handlerInput, repeat_only
             .speak("Something went wrong while retrieving the quiz card. Please try again.");
     }
 
-    let promptText = "How would you pronounce this category name?";
-    let repromptText = "Please pronounce the category name on the screen.";
-    let speech = new Speech();
+    const promptText = "How would you pronounce this category name?";
+    const repromptText = "Please pronounce the category name on the screen.";
+    const speech = new Speech();
     let quizResponse = {};
 
     if (!("category_list" in sessionAttributes)) {
@@ -355,7 +356,9 @@ const category_quiz_response_builder = async function (handlerInput, repeat_only
             "repromptText": repromptText
         };
     }
+
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    console.info(`[category_quiz_response_builder] quizResponse: ${JSON.stringify(quizResponse)}`);
     return quizResponse;
 };
 
@@ -398,7 +401,7 @@ const process_category_quiz_answer = async function (handlerInput) {
     };
 
     return utterances_repository.addCategoryUtterance(params)
-        .then((data) => {
+        .then(async (data) => {
             console.log(`Category utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
 
             if (remaining_categories.length == 0) {
@@ -411,10 +414,9 @@ const process_category_quiz_answer = async function (handlerInput) {
                 return responseBuilder.speak(speechText);
 
             } else {
-                let quizResponse = category_quiz_response_builder(handlerInput);
+                const quizResponse = await category_quiz_response_builder(handlerInput);
+                console.info(`[process_category_quiz_answer] quizResponse: ${JSON.stringify(quizResponse)}`);
                 speech.prosody({ rate: "fast" }, "Ok");
-                // speech.pause('500ms');
-                // speech.sayWithSSML(quizResponse.speechText);
                 const speechText = speech.ssml();
 
                 return responseBuilder
@@ -432,9 +434,9 @@ const process_category_quiz_answer = async function (handlerInput) {
 };
 
 const test_quiz_response_builder = function (handlerInput) {
-    let promptText = "What is your query?";
-    let repromptText = "Please provide your query";
-    let speech = new Speech();
+    const promptText = "What is your query?";
+    const repromptText = "Please provide your query";
+    const speech = new Speech();
     let quizResponse = {};
     let last_utterance = "";
     let oov_text = "";
@@ -486,11 +488,10 @@ const process_test_quiz_answer = async function (handlerInput) {
     try {
         oov_response = await get_oov_mapping_by_query(oov_params);
     } catch(error) {
-        console.log(`Could not get OOV mapper result: ${oov_params}`, error);
+        console.error(`[process_test_quiz_answer] could not get OOV mapper result: ${oov_params}`, error);
         speech.say("Sorry, I'm unable to reach the mapper service at the moment. Please try again later.");
         const speechText = speech.ssml();
-        return responseBuilder
-            .speak(speechText);
+        return responseBuilder.speak(speechText);
     }
     
     sessionAttributes["oov_response"] = oov_response;
@@ -507,9 +508,8 @@ const process_test_quiz_answer = async function (handlerInput) {
     };
 
     return utterances_repository.addTestUtterance(params)
-        .then(async (data) => {
+        .then((data) => {
             console.log(`Test utterance saved: ${JSON.stringify(params)} | data: ${JSON.stringify(data)}`);
-
             let quizResponse = test_quiz_response_builder(handlerInput);
             speech.prosody({ rate: "fast" }, "Ok");
             const speechText = speech.ssml();
