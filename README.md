@@ -33,11 +33,13 @@ serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_start_pa
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_start_9727_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_last_utterance_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_repeat_utterance_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_answer_payload.json
 
 serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_start_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_start_9727_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_last_utterance_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_repeat_utterance_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_answer_payload.json
 
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_start_payload.json
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_last_utterance_payload.json
