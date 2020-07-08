@@ -32,13 +32,15 @@ do
 
     # Wait till the table is active
     aws dynamodb wait table-exists --table-name "$table_name" --region $region
+    sleep 5s
 
     aws dynamodb update-continuous-backups \
         --table-name $table_name \
+        --region $region \
         --point-in-time-recovery-specification PointInTimeRecoveryEnabled=True
 done
 
-echo "success"
+printf "Successfully created DynamoDB tables for [$stage] env in [$region] region \n"
 
 
 

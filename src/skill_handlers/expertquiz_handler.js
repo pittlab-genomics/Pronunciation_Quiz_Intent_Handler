@@ -1,19 +1,19 @@
-const Alexa = require('ask-sdk-core');
-const Speech = require('ssml-builder');
-var _ = require('lodash');
-const utterances_repository = require('../dao/utterances_repository.js');
+const Alexa = require("ask-sdk-core");
+const Speech = require("ssml-builder");
+var _ = require("lodash");
+const utterances_repository = require("../dao/utterances_repository.js");
 
 const ExpertAnswerIntentHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ExpertAnswerIntent';
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest"
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === "ExpertAnswerIntent";
     },
     async handle(handlerInput) {
         console.log("[ExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
         const request = handlerInput.requestEnvelope.request;
         const speech = new Speech();
         const responseBuilder = handlerInput.responseBuilder;
-        const expert_utterance = _.get(handlerInput, 'requestEnvelope.request.intent.slots.expert.value');
+        const expert_utterance = _.get(handlerInput, "requestEnvelope.request.intent.slots.expert.value");
 
         // if (request.dialogState && request.dialogState !== 'COMPLETED') {
         //     return handlerInput.responseBuilder
@@ -36,18 +36,19 @@ const ExpertAnswerIntentHandler = {
         }
 
         let params = {
-            'gene_name': 'EXPERT_UTTERANCE_PENDING',
-            'utterance': expert_utterance,
-            'device_id': _.get(handlerInput, 'requestEnvelope.context.System.device.deviceId'),
-            'user_id': _.get(handlerInput, 'requestEnvelope.context.System.user.userId'),
-            'session_id': _.get(handlerInput, 'requestEnvelope.session.sessionId'),
-            'request_id': _.get(handlerInput, 'requestEnvelope.request.requestId'),
-            'intent_timestamp': _.get(handlerInput, 'requestEnvelope.request.timestamp')
+            "gene_name": "EXPERT_UTTERANCE_PENDING",
+            "utterance": expert_utterance,
+            "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+            "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+            "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
+            "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+            "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
         };
 
         return utterances_repository.addExpertUtterance(params)
             .then((data) => {
-                console.log('Expert utterance saved: ', params);
+                console.log(`Expert utterance saved | params: ${JSON.stringify(params)}, ` + 
+                `data: ${JSON.stringify(data)}}`);
                 speech.say("Okay!");
                 const speechText = speech.ssml();
                 return responseBuilder
@@ -67,21 +68,21 @@ const ExpertAnswerIntentHandler = {
 
 const StartExpertAnswerIntentHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'ExpertQuizIntent';
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === "IntentRequest"
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === "ExpertQuizIntent";
     },
     handle(handlerInput) {
         console.log("[StartExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
         return handlerInput.responseBuilder
-            // .addDelegateDirective({
-            //     name: 'ExpertAnswerIntent',
-            //     confirmationStatus: 'NONE',
-            //     slots: {}
-            // })
+        // .addDelegateDirective({
+        //     name: 'ExpertAnswerIntent',
+        //     confirmationStatus: 'NONE',
+        //     slots: {}
+        // })
 
-            .addElicitSlotDirective('expert', {
-                name: 'ExpertAnswerIntent',
-                confirmationStatus: 'NONE',
+            .addElicitSlotDirective("expert", {
+                name: "ExpertAnswerIntent",
+                confirmationStatus: "NONE",
                 slots: {}
             })
             .speak("start expert")
@@ -93,4 +94,4 @@ const StartExpertAnswerIntentHandler = {
 module.exports = {
     ExpertAnswerIntentHandler,
     StartExpertAnswerIntentHandler
-}
+};

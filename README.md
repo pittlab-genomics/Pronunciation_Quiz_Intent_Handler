@@ -30,8 +30,16 @@ serverless invoke local --function alexa-skill -p ./examples/GeneQuizStart_train
 serverless invoke local --function alexa-skill -p ./examples/GeneQuiz_repeat_utterance_payload.json
 
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_start_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_start_9727_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_last_utterance_payload.json
 serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_repeat_utterance_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CancerQuiz_answer_payload.json
+
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_start_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_start_9727_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_last_utterance_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_repeat_utterance_payload.json
+serverless invoke local --function alexa-skill -p ./examples/CategoryQuiz_answer_payload.json
 
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_start_payload.json
 serverless invoke local --function alexa-skill -p ./examples/TestQuiz_last_utterance_payload.json
@@ -58,3 +66,11 @@ serverless invoke local --function cancer_utterances_stats
 serverless invoke local --function cancer_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19"}}'
 serverless invoke local --function cancer_utterances_stats --data '{"queryStringParameters":{"user_code": "0000"}}'
 serverless invoke local --function cancer_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "user_code": "0000"}}'
+
+
+serverless invoke local --function category_utterances_list
+
+serverless invoke local --function category_utterances_stats
+serverless invoke local --function category_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19"}}'
+serverless invoke local --function category_utterances_stats --data '{"queryStringParameters":{"user_code": "0000"}}'
+serverless invoke local --function category_utterances_stats --data '{"queryStringParameters":{"start_date": "2020-01-19", "user_code": "0000"}}'

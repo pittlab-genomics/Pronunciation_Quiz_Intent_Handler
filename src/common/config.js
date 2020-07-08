@@ -6,11 +6,13 @@ const user_code_names_dict = {
     9727: "Akila Perera"
 };
 
-const QUIZ_PROMPTS_PER_SESSION = 60;
+const GENE_QUIZ_PROMPTS_PER_SESSION = 60;
+const QUIZ_CEILING_UTTERANCE_COUNT = 5;
 
 module.exports = {
     melvin_endpoint: process.env.MELVIN_REST_API_ENDPOINT,
     user_code_names_dict,
-    QUIZ_PROMPTS_PER_SESSION,
+    GENE_QUIZ_PROMPTS_PER_SESSION: GENE_QUIZ_PROMPTS_PER_SESSION,
     OOV_MAPPER_ENDPOINT: process.env.OOV_MAPPER_ENDPOINT,
-}
+    QUIZ_CEILING_UTTERANCE_COUNT
+};

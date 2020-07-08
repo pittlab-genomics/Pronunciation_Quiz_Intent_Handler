@@ -29,3 +29,15 @@ cancer_utterances_stats:
   module: src/dashboard
   events:
     - http: get /dashboard/cancer_utterances/stats
+
+category_utterances_list:
+  handler: src/dashboard/category_utterances.list_handler
+  module: src/dashboard
+  events:
+    - http: get /dashboard/category_utterances/list
+
+category_utterances_stats:
+  handler: src/dashboard/category_utterances.stats_handler
+  module: src/dashboard
+  events:
+    - http: get /dashboard/category_utterances/stats

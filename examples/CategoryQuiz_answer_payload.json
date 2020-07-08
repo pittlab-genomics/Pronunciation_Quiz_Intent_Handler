@@ -1,0 +1,97 @@
+{
+    "version": "1.0",
+    "session": {
+        "new": false,
+        "sessionId": "xxx",
+        "application": {
+            "applicationId": "xxx"
+        },
+        "attributes": {
+            "quiz": "CATEGORY_QUIZ",
+            "quiz_referrer": "CategoryQuizIntent",
+            "category_quiz_item": "TEST_CATEGORY",
+            "category_list": [
+                "mutations",
+                "indels"
+            ],
+            "user_code": 0
+        },
+        "user": {
+            "userId": "xxx"
+        }
+    },
+    "context": {
+        "AudioPlayer": {
+            "playerActivity": "IDLE"
+        },
+        "Display": {
+            "token": ""
+        },
+        "System": {
+            "application": {
+                "applicationId": "xxx"
+            },
+            "user": {
+                "userId": "xxx"
+            },
+            "device": {
+                "deviceId": "ddd",
+                "supportedInterfaces": {
+                    "AudioPlayer": {},
+                    "Display": {
+                        "templateVersion": "1.0",
+                        "markupVersion": "1.0"
+                    },
+                    "Alexa.Presentation.APL": {
+                        "runtime": {
+                            "maxVersion": "1.0"
+                        }
+                    }
+                }
+            },
+            "apiEndpoint": "https://api.amazonalexa.com",
+            "apiAccessToken": "ttt"
+        },
+        "Viewport": {
+            "experiences": [
+                {
+                    "arcMinuteWidth": 246,
+                    "arcMinuteHeight": 144,
+                    "canRotate": false,
+                    "canResize": false
+                }
+            ],
+            "shape": "RECTANGLE",
+            "pixelWidth": 1024,
+            "pixelHeight": 600,
+            "dpi": 160,
+            "currentPixelWidth": 1024,
+            "currentPixelHeight": 600,
+            "touch": [
+                "SINGLE"
+            ],
+            "video": {
+                "codecs": [
+                    "H_264_42",
+                    "H_264_41"
+                ]
+            }
+        }
+    },
+    "request": {
+        "type": "IntentRequest",
+        "requestId": "xxx",
+        "timestamp": "2019-08-13T07:51:25Z",
+        "locale": "en-US",
+        "intent": {
+            "name": "AnswerIntent",
+            "confirmationStatus": "NONE",
+            "slots": {
+                "quiz_answer_query": {
+                    "value": "test category utterance"
+                }
+            }
+        },
+        "dialogState": "COMPLETED"
+    }
+}

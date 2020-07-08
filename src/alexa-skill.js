@@ -1,51 +1,50 @@
-'use strict';
+"use strict";
 
-const Alexa = require('ask-sdk-core');
-const Speech = require('ssml-builder');
-var _ = require('lodash');
+const Alexa = require("ask-sdk-core");
+const Speech = require("ssml-builder");
 
-const { RequestLogInterceptor, ResponseLogInterceptor } = require('./interceptors.js');
-const { SearchGeneIntentHandler } = require('./skill_handlers/searchgene_handler.js');
+const { RequestLogInterceptor, ResponseLogInterceptor } = require("./interceptors.js");
+const { SearchGeneIntentHandler } = require("./skill_handlers/searchgene_handler.js");
 const {
     GeneQuizIntentHandler,
     CancerQuizIntentHandler,
+    CategoryQuizIntentHandler,
     TestQuizIntentHandler,
     AnswerIntentHandler,
     UserIdentifierIntentHandler,
     RepeatQuizIntentHandler
-} = require('./skill_handlers/quiz_handler.js');
+} = require("./skill_handlers/quiz_handler.js");
 const {
     ExpertAnswerIntentHandler,
     StartExpertAnswerIntentHandler
-} = require('./skill_handlers/expertquiz_handler.js');
+} = require("./skill_handlers/expertquiz_handler.js");
 
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === "LaunchRequest";
     },
     handle(handlerInput) {
         const speech = new Speech();
         speech
             .say("Welcome to gene quiz.")
-            .prosody({ rate: '120%' }, "We have gene quiz, cancer quiz and test quiz.")
-            .pause('500ms')
-            .say("Which one would you like to play?");
+            .prosody({ rate: "115%" },
+                "We have gene quiz, cancer quiz, category quiz and test quiz. Which one would you like to play?");
 
         return handlerInput.responseBuilder
             .speak(speech.ssml(true))
-            .reprompt("Which would you like to play? Gene quiz, cancer quiz or test quiz.")
+            .reprompt("Which would you like to play? Gene quiz, cancer quiz, category quiz or test quiz.")
             .getResponse();
     }
 };
 
 const HelpIntentHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-            && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+        return handlerInput.requestEnvelope.request.type === "IntentRequest"
+            && handlerInput.requestEnvelope.request.intent.name === "AMAZON.HelpIntent";
     },
     handle(handlerInput) {
-        const speechText = 'You can say hello to me! How can I help?';
+        const speechText = "You can say hello to me! How can I help?";
 
         return handlerInput.responseBuilder
             .speak(speechText)
@@ -56,12 +55,12 @@ const HelpIntentHandler = {
 
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-            && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent'
-                || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+        return handlerInput.requestEnvelope.request.type === "IntentRequest"
+            && (handlerInput.requestEnvelope.request.intent.name === "AMAZON.CancelIntent"
+                || handlerInput.requestEnvelope.request.intent.name === "AMAZON.StopIntent");
     },
     handle(handlerInput) {
-        const speechText = 'Goodbye!';
+        const speechText = "Goodbye!";
         return handlerInput.responseBuilder
             .speak(speechText)
             .getResponse();
@@ -70,7 +69,7 @@ const CancelAndStopIntentHandler = {
 
 const SessionEndedRequestHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+        return handlerInput.requestEnvelope.request.type === "SessionEndedRequest";
     },
     handle(handlerInput) {
         // Any cleanup logic goes here.
@@ -84,7 +83,7 @@ const SessionEndedRequestHandler = {
 // handler chain below.
 const IntentReflectorHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest';
+        return handlerInput.requestEnvelope.request.type === "IntentRequest";
     },
     handle(handlerInput) {
         const intentName = handlerInput.requestEnvelope.request.intent.name;
@@ -92,7 +91,7 @@ const IntentReflectorHandler = {
 
         return handlerInput.responseBuilder
             .speak(speechText)
-            .reprompt('Would you like to try again?')
+            .reprompt("Would you like to try again?")
             .getResponse();
     }
 };
@@ -106,7 +105,7 @@ const ErrorHandler = {
     },
     handle(handlerInput, error) {
         console.log(`~~~~ Error handled: ${error.message}`, error);
-        const speechText = `Sorry, I'm unable to process that request for the moment. Please try again later.`;
+        const speechText = "Sorry, I'm unable to process that request for the moment. Please try again later.";
 
         return handlerInput.responseBuilder
             .speak(speechText)
@@ -126,6 +125,7 @@ exports.handler = Alexa.SkillBuilders.custom()
         UserIdentifierIntentHandler,
         GeneQuizIntentHandler,
         CancerQuizIntentHandler,
+        CategoryQuizIntentHandler,
         TestQuizIntentHandler,
         AnswerIntentHandler,
         RepeatQuizIntentHandler,

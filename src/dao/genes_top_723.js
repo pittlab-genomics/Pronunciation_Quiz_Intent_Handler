@@ -726,4 +726,4 @@ const gene_list_top_723 = [
 
 module.exports = {
     gene_list_top_723
-}
+};
