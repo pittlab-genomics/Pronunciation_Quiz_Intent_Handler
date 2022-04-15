@@ -2,9 +2,7 @@ var _ = require("lodash");
 
 const { user_code_names_dict } = require("./config.js");
 
-const APLDocs = {
-    quiz_card: require("../../resources/APL/quiz_card.json"),
-};
+const APLDocs = { quiz_card: require("../../resources/APL/quiz_card.json"), };
 
 const supportsAPL = function (handlerInput) {
     const supportedInterfaces = handlerInput.requestEnvelope.context
@@ -27,14 +25,14 @@ const getSlotValues = function (filledSlots) {
             switch (filledSlots[item].resolutions.resolutionsPerAuthority[0].status.code) {
             case "ER_SUCCESS_MATCH":
                 slotValues[name] = {
-                    heardAs: filledSlots[item].value,
+                    heardAs:  filledSlots[item].value,
                     resolved: filledSlots[item].resolutions.resolutionsPerAuthority[0].values[0].value.name,
                     ERstatus: "ER_SUCCESS_MATCH"
                 };
                 break;
             case "ER_SUCCESS_NO_MATCH":
                 slotValues[name] = {
-                    heardAs: filledSlots[item].value,
+                    heardAs:  filledSlots[item].value,
                     resolved: "",
                     ERstatus: "ER_SUCCESS_NO_MATCH"
                 };
@@ -44,7 +42,7 @@ const getSlotValues = function (filledSlots) {
             }
         } else {
             slotValues[name] = {
-                heardAs: filledSlots[item].value || "", // may be null 
+                heardAs:  filledSlots[item].value || "", // may be null 
                 resolved: "",
                 ERstatus: ""
             };
@@ -87,9 +85,8 @@ function groupItemsCountLabeled(data, attribute_name) {
         if (_.has(count_dict, item)) {
             count_dict[item]["utterances_count"] += 1;
         } else {
-            count_dict[item] = {
-                "utterances_count": 1 // initial entry for the counter
-            };
+            // initial entry for the counter
+            count_dict[item] = { "utterances_count": 1 };
         }
     });
     return count_dict;
@@ -102,17 +99,15 @@ function populate_display(handlerInput, title, item_text, footer_text) {
     } else {
         item_text = item_text.replace(/\n/g, "<br/>");
         handlerInput.responseBuilder.addDirective({
-            type: "Alexa.Presentation.APL.RenderDocument",
-            token: "pagerToken",
-            version: "1.0",
-            document: APLDocs.quiz_card,
-            datasources: {
-                "templateData": {
-                    "title": title,
-                    "quiz_item": item_text,
-                    "footer_text": footer_text
-                },
-            },
+            type:        "Alexa.Presentation.APL.RenderDocument",
+            token:       "pagerToken",
+            version:     "1.0",
+            document:    APLDocs.quiz_card,
+            datasources: { "templateData": {
+                "title":       title,
+                "quiz_item":   item_text,
+                "footer_text": footer_text
+            }, },
         });
     }
 }
@@ -133,17 +128,15 @@ function populate_quiz_display(handlerInput, title, user_code, total_count, rema
     } else {
         const footer_text = `${user_text} | Progress: ${completed_items}/${total_count}`;
         handlerInput.responseBuilder.addDirective({
-            type: "Alexa.Presentation.APL.RenderDocument",
-            token: "pagerToken",
-            version: "1.0",
-            document: APLDocs.quiz_card,
-            datasources: {
-                "templateData": {
-                    "title": title,
-                    "quiz_item": gene_quiz_item,
-                    "footer_text": footer_text
-                },
-            },
+            type:        "Alexa.Presentation.APL.RenderDocument",
+            token:       "pagerToken",
+            version:     "1.0",
+            document:    APLDocs.quiz_card,
+            datasources: { "templateData": {
+                "title":       title,
+                "quiz_item":   gene_quiz_item,
+                "footer_text": footer_text
+            }, },
         });
     }
 }

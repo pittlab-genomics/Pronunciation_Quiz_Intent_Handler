@@ -58,29 +58,25 @@ exports.handler = async function (event) {
             category_count += utterances_dict["category_names"][item]["utterances_count"];
         }
 
-        response = {
-            "data": {
-                "gene_utterances": utterances_dict["gene_names"],
-                "gene_utterances_count": gene_count,
-                "cancer_utterances": utterances_dict["cancer_names"],
-                "cancer_utterances_count": cancer_count,
-                "category_utterances": utterances_dict["category_names"],
-                "category_utterances_count": category_count
-            }
-        };
+        response = { "data": {
+            "gene_utterances":           utterances_dict["gene_names"],
+            "gene_utterances_count":     gene_count,
+            "cancer_utterances":         utterances_dict["cancer_names"],
+            "cancer_utterances_count":   cancer_count,
+            "category_utterances":       utterances_dict["category_names"],
+            "category_utterances_count": category_count
+        }};
     }
     catch (err) {
         status_code = 500;
         console.error(`[dashboard.stats] Exception raised: ${JSON.stringify(err)}`, err);
-        response = {
-            "error": "Something went wrong"
-        };
+        response = { "error": "Something went wrong" };
     }
 
     return {
         "statusCode": status_code,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(response, null, 4)
+        "headers":    { "Content-Type": "application/json" },
+        "body":       JSON.stringify(response, null, 4)
     };
 };
 

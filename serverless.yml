@@ -1,10 +1,10 @@
 service: gene-quiz-ask-handler
 
-frameworkVersion: ">=1.4.0 <2.0.0"
+frameworkVersion: ">=3.0.0 <4.0.0"
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs14.x
   stage: ${self:custom.stage}
   region: eu-west-1
   memorySize: 2048
@@ -74,10 +74,18 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_TEST_UTTERANCES}"
 
+    - Effect: Allow
+      Action:
+        - sts:AssumeRole
+      Resource: "arn:aws:iam::${aws:accountId}:role/melvin-${self:provider.stage}-skill-intent-handler-role"
+
 functions:
   - alexa-skill:
       handler: src/alexa-skill.handler
-      module: src
+      timeout: 30
+      provisionedConcurrency: 0
+      reservedConcurrency: 10
+      memorySize: 3008
       events:
         - alexaSkill:
             appId: ${self:custom.config.alexa.appId}
@@ -92,13 +100,9 @@ plugins:
   - serverless-prune-plugin
 
 package:
-  individually: false
-  excludeDevDependencies: false
-  include:
-    - "!./**"
-    - "./src/**"
   exclude:
-    - "**"
+    - .vscode/**
+  excludeDevDependencies: false
 
 custom:
   # Our stage is based on what is passed in when running serverless

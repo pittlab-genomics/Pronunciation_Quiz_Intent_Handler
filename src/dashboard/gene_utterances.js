@@ -25,25 +25,21 @@ exports.list_handler = async function (event) {
                 .filter(val => gene_list_GENERIF_top50.includes(val["gene_name"]));
         }
 
-        response = {
-            "data": {
-                "record_count": all_utterances.length,
-                "records": all_utterances
-            }
-        };
+        response = { "data": {
+            "record_count": all_utterances.length,
+            "records":      all_utterances
+        }};
     }
     catch (err) {
         status_code = 500;
         console.error(`[dashboard.gene_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
-        response = {
-            "error": "Something went wrong"
-        };
+        response = { "error": "Something went wrong" };
     }
 
     return {
         "statusCode": status_code,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(response, null, 4)
+        "headers":    { "Content-Type": "application/json" },
+        "body":       JSON.stringify(response, null, 4)
     };
 };
 
@@ -59,14 +55,12 @@ function filter_genes_stats_by_list(gene_list, gene_utterances_stats) {
     gene_list.forEach(function (item) {
         if (_.isNil(gene_utterances_stats[item])) {
             genes_without_utterances.push(item);
-            gene_utterances_stats[item] = {
-                "utterances_count": 0
-            };
+            gene_utterances_stats[item] = { "utterances_count": 0 };
         }
     });
     return {
         "genes_without_utterances": genes_without_utterances.length,
-        "gene_utterances": gene_utterances_stats
+        "gene_utterances":          gene_utterances_stats
     };
 }
 
@@ -111,22 +105,18 @@ exports.stats_handler = async function (event) {
             gene_utterances_stats = filter_genes_stats_by_list([], gene_utterances_stats);
         }
 
-        response = {
-            "data": gene_utterances_stats
-        };
+        response = { "data": gene_utterances_stats };
     }
     catch (err) {
         status_code = 500;
         console.error(`[dashboard.gene_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
-        response = {
-            "error": "Something went wrong"
-        };
+        response = { "error": "Something went wrong" };
     }
 
     return {
         "statusCode": status_code,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(response, null, 4)
+        "headers":    { "Content-Type": "application/json" },
+        "body":       JSON.stringify(response, null, 4)
     };
 };
 

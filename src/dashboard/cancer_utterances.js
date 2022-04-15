@@ -10,25 +10,21 @@ exports.list_handler = async function (event) {
     let status_code = 200;
     try {
         const all_utterances = await utterances_repository.getAllCancerUtterances();
-        response = {
-            "data": {
-                "record_count": all_utterances.length,
-                "records": all_utterances
-            }
-        };
+        response = { "data": {
+            "record_count": all_utterances.length,
+            "records":      all_utterances
+        }};
     }
     catch (err) {
         status_code = 500;
         console.error(`[dashboard.cancer_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
-        response = {
-            "error": "Something went wrong"
-        };
+        response = { "error": "Something went wrong" };
     }
 
     return {
         "statusCode": status_code,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(response, null, 4)
+        "headers":    { "Content-Type": "application/json" },
+        "body":       JSON.stringify(response, null, 4)
     };
 };
 
@@ -62,22 +58,18 @@ exports.stats_handler = async function (event) {
         }
 
         const cancer_utterances_stats = await utterances_repository.getUtterancesCountByCancer(params);
-        response = {
-            "data": cancer_utterances_stats
-        };
+        response = { "data": cancer_utterances_stats };
     }
     catch (err) {
         status_code = 500;
         console.error(`[dashboard.cancer_utterances_list] Exception raised: ${JSON.stringify(err)}`, err);
-        response = {
-            "error": "Something went wrong"
-        };
+        response = { "error": "Something went wrong" };
     }
 
     return {
         "statusCode": status_code,
-        "headers": { "Content-Type": "application/json" },
-        "body": JSON.stringify(response, null, 4)
+        "headers":    { "Content-Type": "application/json" },
+        "body":       JSON.stringify(response, null, 4)
     };
 };
 

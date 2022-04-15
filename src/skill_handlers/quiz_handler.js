@@ -35,8 +35,8 @@ const UserIdentifierIntentHandler = {
                 .getResponse();
 
         }
-
-        delete sessionAttributes["quiz_referrer"]; // drop flag attribute after validation check and dialog management is complete
+        // drop flag attribute after validation check and dialog management is complete
+        delete sessionAttributes["quiz_referrer"]; 
 
         const slotValues = getSlotValues(request.intent.slots);
         console.log("***** UserIdentifierIntent slotValues: " + JSON.stringify(slotValues, null, 2));
@@ -133,9 +133,9 @@ const GeneQuizIntentHandler = {
         handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
         return handlerInput.responseBuilder
             .addElicitSlotDirective("user_identifier", {
-                name: "UserIdentifierIntent",
+                name:               "UserIdentifierIntent",
                 confirmationStatus: "NONE",
-                slots: {}
+                slots:              {}
             })
             .speak("Ok, let's play the gene quiz. What is your identification code?")
             .reprompt("Please provide your four-digit user identification code.")
@@ -155,9 +155,9 @@ const CancerQuizIntentHandler = {
         handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
         return handlerInput.responseBuilder
             .addElicitSlotDirective("user_identifier", {
-                name: "UserIdentifierIntent",
+                name:               "UserIdentifierIntent",
                 confirmationStatus: "NONE",
-                slots: {}
+                slots:              {}
             })
             .speak("Ok, let's play the cancer quiz. What is your identification code?")
             .reprompt("Please provide your four-digit user identification code.")
@@ -177,9 +177,9 @@ const CategoryQuizIntentHandler = {
         handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
         return handlerInput.responseBuilder
             .addElicitSlotDirective("user_identifier", {
-                name: "UserIdentifierIntent",
+                name:               "UserIdentifierIntent",
                 confirmationStatus: "NONE",
-                slots: {}
+                slots:              {}
             })
             .speak("Ok, let's play the category quiz. What is your identification code?")
             .reprompt("Please provide your four-digit user identification code.")

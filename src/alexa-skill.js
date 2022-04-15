@@ -1,9 +1,9 @@
-"use strict";
-
 const Alexa = require("ask-sdk-core");
 const Speech = require("ssml-builder");
 
-const { RequestLogInterceptor, ResponseLogInterceptor } = require("./interceptors.js");
+const {
+    RequestLogInterceptor, ResponseLogInterceptor, STSCredentialsInterceptor 
+} = require("./interceptors.js");
 const { SearchGeneIntentHandler } = require("./skill_handlers/searchgene_handler.js");
 const {
     GeneQuizIntentHandler,
@@ -118,6 +118,7 @@ const ErrorHandler = {
 // defined are included below. The order matters - they're processed top to bottom.
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestInterceptors(RequestLogInterceptor)
+    .addRequestInterceptors(STSCredentialsInterceptor)
     .addResponseInterceptors(ResponseLogInterceptor)
     .addRequestHandlers(
         LaunchRequestHandler,

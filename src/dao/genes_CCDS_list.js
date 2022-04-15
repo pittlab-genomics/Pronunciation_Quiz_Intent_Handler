@@ -18928,6 +18928,4 @@ const genes_CCDS_list = ["A1BG",
     "ZSWIM1",
     "ZSWIM5"];
 
-module.exports = {
-    genes_CCDS_list
-};
+module.exports = { genes_CCDS_list };

@@ -1,5 +1,7 @@
 const _ = require("lodash");
-const { shuffle, groupItemsCount } = require("../common/util.js");
+const {
+    shuffle, groupItemsCount 
+} = require("../common/util.js");
 const { QUIZ_CEILING_UTTERANCE_COUNT } = require("../common/config.js");
 
 const category_target_list = [

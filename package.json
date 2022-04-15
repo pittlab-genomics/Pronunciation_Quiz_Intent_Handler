@@ -5,20 +5,27 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.656.0",
-    "ask-sdk": "^2.8.0",
-    "ask-sdk-core": "^2.8.0",
-    "ask-sdk-model": "^1.28.0",
-    "request": "^2.88.0",
+    "serverless": "^3.1.1",
+    "@adobe/node-fetch-retry": "^2.2.0",
+    "abort-controller": "^3.0.0",
+    "ask-sdk-core": "^2.12.1",
+    "ask-sdk-dynamodb-persistence-adapter": "^2.12.1",
+    "ask-sdk-model": "^1.38.1",
+    "aws-sdk": "^2.1115.0",
+    "@aws-sdk/protocol-http": "^3.58.0",
+    "@aws-sdk/client-sts": "^3.67.0",
+    "@aws-sdk/signature-v4": "^3.58.0",
+    "@aws-sdk/client-dynamodb": "^3.67.0",
+    "@aws-crypto/sha256-browser": "^2.0.1",
     "serverless-plugin-aws-alerts": "^1.4.0",
     "ssml-builder": "^0.4.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0"
   },
   "devDependencies": {
     "eslint": "^7.3.1",
     "eslint-config-google": "^0.14.0",
-    "serverless-plugin-include-dependencies": "^3.2.1",
-    "serverless-prune-plugin": "^1.4.0"
+    "serverless-plugin-include-dependencies": "^5.0.0",
+    "serverless-prune-plugin": "^2.0.1"
   }
 }

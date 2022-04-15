@@ -19,7 +19,7 @@ const SearchGeneIntentHandler = {
         let params = { gene_name };
 
         try {
-            let response = await get_gene_by_name(params);
+            let response = await get_gene_by_name(handlerInput, params);
             if (response["data"] && response["data"]["location"] && response["data"]["summary"]) {
                 speech.say(`${gene_name} is at ${response.data.location}`);
                 speech.pause("100ms");
@@ -48,6 +48,4 @@ const SearchGeneIntentHandler = {
     }
 };
 
-module.exports = {
-    SearchGeneIntentHandler
-};
+module.exports = { SearchGeneIntentHandler };

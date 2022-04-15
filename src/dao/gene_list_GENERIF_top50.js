@@ -51,6 +51,4 @@ const gene_list_GENERIF_top50 = [
     "RHOA"
 ];
 
-module.exports = {
-    gene_list_GENERIF_top50
-};
+module.exports = { gene_list_GENERIF_top50 };

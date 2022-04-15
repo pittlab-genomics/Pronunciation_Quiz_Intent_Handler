@@ -9,7 +9,8 @@ const ExpertAnswerIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === "ExpertAnswerIntent";
     },
     async handle(handlerInput) {
-        console.log("[ExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
+        console.log("[ExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " 
+        + JSON.stringify(handlerInput.requestEnvelope));
         const request = handlerInput.requestEnvelope.request;
         const speech = new Speech();
         const responseBuilder = handlerInput.responseBuilder;
@@ -36,12 +37,12 @@ const ExpertAnswerIntentHandler = {
         }
 
         let params = {
-            "gene_name": "EXPERT_UTTERANCE_PENDING",
-            "utterance": expert_utterance,
-            "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
-            "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
-            "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
-            "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+            "gene_name":        "EXPERT_UTTERANCE_PENDING",
+            "utterance":        expert_utterance,
+            "device_id":        _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+            "user_id":          _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+            "session_id":       _.get(handlerInput, "requestEnvelope.session.sessionId"),
+            "request_id":       _.get(handlerInput, "requestEnvelope.request.requestId"),
             "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
         };
 
@@ -72,7 +73,8 @@ const StartExpertAnswerIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === "ExpertQuizIntent";
     },
     handle(handlerInput) {
-        console.log("[StartExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " + JSON.stringify(handlerInput.requestEnvelope));
+        console.log("[StartExpertAnswerIntentHandler] ASP REQUEST ENVELOPE = " 
+        + JSON.stringify(handlerInput.requestEnvelope));
         return handlerInput.responseBuilder
         // .addDelegateDirective({
         //     name: 'ExpertAnswerIntent',
@@ -81,9 +83,9 @@ const StartExpertAnswerIntentHandler = {
         // })
 
             .addElicitSlotDirective("expert", {
-                name: "ExpertAnswerIntent",
+                name:               "ExpertAnswerIntent",
                 confirmationStatus: "NONE",
-                slots: {}
+                slots:              {}
             })
             .speak("start expert")
             .reprompt("reprompt start expert")

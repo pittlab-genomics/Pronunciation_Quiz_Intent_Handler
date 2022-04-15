@@ -5,8 +5,12 @@ const genes_repository = require("../dao/genes_repository");
 const cancer_repository = require("../dao/cancer_repository.js");
 const category_repository = require("../dao/category_repository.js");
 const utterances_repository = require("../dao/utterances_repository.js");
-const { populate_quiz_display, populate_display } = require("../common/util.js");
-const { user_code_names_dict, GENE_QUIZ_PROMPTS_PER_SESSION } = require("../common/config.js");
+const {
+    populate_quiz_display, populate_display 
+} = require("../common/util.js");
+const {
+    user_code_names_dict, GENE_QUIZ_PROMPTS_PER_SESSION 
+} = require("../common/config.js");
 const { get_oov_mapping_by_query } = require("../http_clients/oov_mapper_client.js");
 
 const gene_quiz_response_builder = async function (handlerInput, repeat_only = false) {
@@ -48,7 +52,7 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
         console.error(`Invalid state in GeneQuiz | remaining_genes: ${remaining_genes}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "There are no items in the gene list. Please check back later.",
+            "speechText":   "There are no items in the gene list. Please check back later.",
             "repromptText": ""
         };
 
@@ -71,7 +75,7 @@ const gene_quiz_response_builder = async function (handlerInput, repeat_only = f
             gene_list_length, remaining_genes.length, gene_quiz_item);
 
         quizResponse = {
-            "speechText": speech.ssml(true),
+            "speechText":   speech.ssml(true),
             "repromptText": repromptText
         };
     }
@@ -109,13 +113,13 @@ const process_gene_quiz_answer = function (handlerInput) {
     }
 
     let params = {
-        "user_code": user_code,
-        "gene_name": gene_quiz_item,
-        "utterance": gene_name_utterance,
-        "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
-        "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
-        "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
-        "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+        "user_code":        user_code,
+        "gene_name":        gene_quiz_item,
+        "utterance":        gene_name_utterance,
+        "device_id":        _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+        "user_id":          _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+        "session_id":       _.get(handlerInput, "requestEnvelope.session.sessionId"),
+        "request_id":       _.get(handlerInput, "requestEnvelope.request.requestId"),
         "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
     };
 
@@ -189,7 +193,7 @@ const cancer_quiz_response_builder = async function (handlerInput, repeat_only=f
         console.error(`Invalid state in CancerQuiz | remaining_cancers: ${remaining_cancers}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "There are no items in the cancer list. Please check back later.",
+            "speechText":   "There are no items in the cancer list. Please check back later.",
             "repromptText": ""
         };
 
@@ -211,7 +215,7 @@ const cancer_quiz_response_builder = async function (handlerInput, repeat_only=f
             cancer_list_length, remaining_cancers.length, cancer_quiz_item);
 
         quizResponse = {
-            "speechText": speech.ssml(true),
+            "speechText":   speech.ssml(true),
             "repromptText": repromptText
         };
     }
@@ -249,13 +253,13 @@ const process_cancer_quiz_answer = async function (handlerInput) {
     }
 
     let params = {
-        "user_code": user_code,
-        "cancer_name": cancer_quiz_item,
-        "utterance": cancer_name_utterance,
-        "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
-        "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
-        "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
-        "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+        "user_code":        user_code,
+        "cancer_name":      cancer_quiz_item,
+        "utterance":        cancer_name_utterance,
+        "device_id":        _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+        "user_id":          _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+        "session_id":       _.get(handlerInput, "requestEnvelope.session.sessionId"),
+        "request_id":       _.get(handlerInput, "requestEnvelope.request.requestId"),
         "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
     };
 
@@ -330,7 +334,7 @@ const category_quiz_response_builder = async function (handlerInput, repeat_only
         console.error(`Invalid state in CategoryQuiz | remaining_categories: ${remaining_categories}`);
         responseBuilder.withShouldEndSession(true);
         quizResponse = {
-            "speechText": "There are no items in the category list. Please check back later.",
+            "speechText":   "There are no items in the category list. Please check back later.",
             "repromptText": ""
         };
 
@@ -352,7 +356,7 @@ const category_quiz_response_builder = async function (handlerInput, repeat_only
             category_list_length, remaining_categories.length, category_quiz_item);
 
         quizResponse = {
-            "speechText": speech.ssml(true),
+            "speechText":   speech.ssml(true),
             "repromptText": repromptText
         };
     }
@@ -390,13 +394,13 @@ const process_category_quiz_answer = async function (handlerInput) {
     }
 
     let params = {
-        "user_code": user_code,
-        "category_name": category_quiz_item,
-        "utterance": category_name_utterance,
-        "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
-        "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
-        "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
-        "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+        "user_code":        user_code,
+        "category_name":    category_quiz_item,
+        "utterance":        category_name_utterance,
+        "device_id":        _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+        "user_id":          _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+        "session_id":       _.get(handlerInput, "requestEnvelope.session.sessionId"),
+        "request_id":       _.get(handlerInput, "requestEnvelope.request.requestId"),
         "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
     };
 
@@ -448,10 +452,10 @@ const test_quiz_response_builder = function (handlerInput) {
     }
     if (!_.isEmpty(sessionAttributes["oov_response"])) {
         const oov_response = sessionAttributes["oov_response"];
-        const oov_entity_type = _.get(oov_response, "data.entity_type");
-        const oov_entity_value = _.get(oov_response, "data.entity_data.value");
-        const oov_model = _.get(oov_response, "data.from");
-        oov_text = ` entity_type: ${oov_entity_type}\n entity_value: ${oov_entity_value}\n model: ${oov_model}`;
+        const oov_entity_type = _.get(oov_response, "data.type");
+        const oov_entity_value = _.get(oov_response, "data.val");
+        const oov_model = _.get(oov_response, "data.stage");
+        oov_text = ` type: ${oov_entity_type}\n value: ${oov_entity_value}\n stage: ${oov_model}`;
     }
 
     const item_text = `query: ${last_utterance}\n\n${oov_text}`;
@@ -459,7 +463,7 @@ const test_quiz_response_builder = function (handlerInput) {
     populate_display(handlerInput, "Test Quiz", item_text, footer_text);
 
     quizResponse = {
-        "speechText": speech.ssml(true),
+        "speechText":   speech.ssml(true),
         "repromptText": repromptText
     };
     return quizResponse;
@@ -486,9 +490,10 @@ const process_test_quiz_answer = async function (handlerInput) {
     const oov_params = { "query": test_utterance };
     let oov_response = {};
     try {
-        oov_response = await get_oov_mapping_by_query(oov_params);
+        oov_response = await get_oov_mapping_by_query(handlerInput, oov_params);
     } catch(error) {
-        console.error(`[process_test_quiz_answer] could not get OOV mapper result: ${oov_params}`, error);
+        console.error("[process_test_quiz_answer] could not get OOV mapper result:" +
+        JSON.stringify(oov_params), error);
         speech.say("Sorry, I'm unable to reach the mapper service at the moment. Please try again later.");
         const speechText = speech.ssml();
         return responseBuilder.speak(speechText);
@@ -498,12 +503,12 @@ const process_test_quiz_answer = async function (handlerInput) {
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
     let params = {
-        "user_id": _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
-        "utterance": test_utterance,
-        "oov_response": oov_response,
-        "device_id": _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
-        "session_id": _.get(handlerInput, "requestEnvelope.session.sessionId"),
-        "request_id": _.get(handlerInput, "requestEnvelope.request.requestId"),
+        "user_id":          _.get(handlerInput, "requestEnvelope.context.System.user.userId"),
+        "utterance":        test_utterance,
+        "oov_response":     oov_response,
+        "device_id":        _.get(handlerInput, "requestEnvelope.context.System.device.deviceId"),
+        "session_id":       _.get(handlerInput, "requestEnvelope.session.sessionId"),
+        "request_id":       _.get(handlerInput, "requestEnvelope.request.requestId"),
         "intent_timestamp": _.get(handlerInput, "requestEnvelope.request.timestamp")
     };
 

@@ -17,7 +17,7 @@ utterances_repository.prototype.addGeneUtterance = (record) => {
     return new Promise((resolve, reject) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
-            Item: record
+            Item:      record
         };
         docClient.put(params, (err, data) => {
             if (err) {
@@ -37,7 +37,7 @@ utterances_repository.prototype.addCancerUtterance = (record) => {
     return new Promise((resolve, reject) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
-            Item: record
+            Item:      record
         };
         docClient.put(params, (err, data) => {
             if (err) {
@@ -56,7 +56,7 @@ utterances_repository.prototype.addCategoryUtterance = (record) => {
     return new Promise((resolve, reject) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
-            Item: record
+            Item:      record
         };
         docClient.put(params, (err, data) => {
             if (err) {
@@ -76,7 +76,7 @@ utterances_repository.prototype.addExpertUtterance = (record) => {
     return new Promise((resolve, reject) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE_EXPERT_UTTERANCES,
-            Item: record
+            Item:      record
         };
         docClient.put(params, (err, data) => {
             if (err) {
@@ -95,7 +95,7 @@ utterances_repository.prototype.addTestUtterance = (record) => {
     return new Promise((resolve, reject) => {
         const params = {
             TableName: process.env.DYNAMODB_TABLE_TEST_UTTERANCES,
-            Item: record
+            Item:      record
         };
         docClient.put(params, (err, data) => {
             if (err) {
@@ -116,41 +116,35 @@ utterances_repository.prototype.getUtterancesCountGroupedByUser = async (event_p
     console.log(`getUtterancesCountGrouped: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     const scan_params_gene = {
-        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
-        ProjectionExpression: "user_code, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        ProjectionExpression:      "user_code, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
     const scan_params_cancer = {
-        TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
-        ProjectionExpression: "user_code, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+        ProjectionExpression:      "user_code, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
     const scan_params_category = {
-        TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
-        ProjectionExpression: "user_code, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
+        ProjectionExpression:      "user_code, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
@@ -178,15 +172,13 @@ utterances_repository.prototype.getFilteredGeneUtterances = async function (even
     console.log(`getFilteredGeneUtterances: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
-        ProjectionExpression: "user_code, gene_name, utterance, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        ProjectionExpression:      "user_code, gene_name, utterance, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
@@ -212,15 +204,13 @@ utterances_repository.prototype.getFilteredCancerUtterances = async function (ev
     console.log(`getFilteredCancerUtterances: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
-        ProjectionExpression: "user_code, cancer_name, utterance, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+        ProjectionExpression:      "user_code, cancer_name, utterance, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
@@ -246,15 +236,13 @@ utterances_repository.prototype.getFilteredCategoryUtterances = async function (
     console.log(`getFilteredCategoryUtterances: ${JSON.stringify(event_params)} | start: ${start}, end: ${end}`);
 
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
-        ProjectionExpression: "user_code, category_name, utterance, createdAt",
-        FilterExpression: "#createdAt between :start and :end",
-        ExpressionAttributeNames: {
-            "#createdAt": "createdAt",
-        },
+        TableName:                 process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
+        ProjectionExpression:      "user_code, category_name, utterance, createdAt",
+        FilterExpression:          "#createdAt between :start and :end",
+        ExpressionAttributeNames:  { "#createdAt": "createdAt", },
         ExpressionAttributeValues: {
             ":start": start,
-            ":end": end
+            ":end":   end
         }
     };
 
@@ -280,7 +268,7 @@ utterances_repository.prototype.getAllGeneUtterances = async () => {
     let all_utterances_list = [];
     console.log("Querying all gene utterances");
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        TableName:            process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
         ProjectionExpression: "user_code, gene_name, utterance, createdAt",
     };
 
@@ -293,7 +281,7 @@ utterances_repository.prototype.getAllCancerUtterances = async () => {
     let all_utterances_list = [];
     console.log("Querying all cancer utterances");
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+        TableName:            process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
         ProjectionExpression: "user_code, cancer_name, utterance, createdAt",
     };
 
@@ -306,7 +294,7 @@ utterances_repository.prototype.getAllCategoryUtterances = async () => {
     let all_utterances_list = [];
     console.log("Querying all category utterances");
     var scan_params = {
-        TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
+        TableName:            process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
         ProjectionExpression: "user_code, category_name, utterance, createdAt",
     };
 
@@ -320,15 +308,11 @@ utterances_repository.prototype.getAllGeneUtterancesByUser = async (user_code) =
     let all_utterances_list = [];
     console.log(`Querying all gene utterances for user_code: ${user_code}`);
     var query_params = {
-        TableName: process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
-        ProjectionExpression: "gene_name",
-        KeyConditionExpression: "#user_code = :ucode",
-        ExpressionAttributeNames: {
-            "#user_code": "user_code"
-        },
-        ExpressionAttributeValues: {
-            ":ucode": user_code
-        }
+        TableName:                 process.env.DYNAMODB_TABLE_GENE_UTTERANCES,
+        ProjectionExpression:      "gene_name",
+        KeyConditionExpression:    "#user_code = :ucode",
+        ExpressionAttributeNames:  { "#user_code": "user_code" },
+        ExpressionAttributeValues: { ":ucode": user_code }
     };
 
     all_utterances_list = await queryEntireTable(query_params);
@@ -341,15 +325,11 @@ utterances_repository.prototype.getAllCancerUtterancesByUser = async (user_code)
     let all_utterances_list = [];
     console.log(`Querying all cancer utterances for user_code: ${user_code}`);
     var query_params = {
-        TableName: process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
-        ProjectionExpression: "cancer_name",
-        KeyConditionExpression: "#user_code = :ucode",
-        ExpressionAttributeNames: {
-            "#user_code": "user_code"
-        },
-        ExpressionAttributeValues: {
-            ":ucode": user_code
-        }
+        TableName:                 process.env.DYNAMODB_TABLE_CANCER_UTTERANCES,
+        ProjectionExpression:      "cancer_name",
+        KeyConditionExpression:    "#user_code = :ucode",
+        ExpressionAttributeNames:  { "#user_code": "user_code" },
+        ExpressionAttributeValues: { ":ucode": user_code }
     };
 
     all_utterances_list = await queryEntireTable(query_params);
@@ -362,15 +342,11 @@ utterances_repository.prototype.getAllCategoryUtterancesByUser = async (user_cod
     let all_utterances_list = [];
     console.log(`Querying all category utterances for user_code: ${user_code}`);
     var query_params = {
-        TableName: process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
-        ProjectionExpression: "category_name",
-        KeyConditionExpression: "#user_code = :ucode",
-        ExpressionAttributeNames: {
-            "#user_code": "user_code"
-        },
-        ExpressionAttributeValues: {
-            ":ucode": user_code
-        }
+        TableName:                 process.env.DYNAMODB_TABLE_CATEGORY_UTTERANCES,
+        ProjectionExpression:      "category_name",
+        KeyConditionExpression:    "#user_code = :ucode",
+        ExpressionAttributeNames:  { "#user_code": "user_code" },
+        ExpressionAttributeValues: { ":ucode": user_code }
     };
 
     all_utterances_list = await queryEntireTable(query_params);
@@ -390,9 +366,8 @@ async function getGroupedCount(scan_params) {
         if (_.has(utterances_dict, user_code)) {
             utterances_dict[user_code]["utterances_count"] += 1;
         } else {
-            utterances_dict[user_code] = {
-                "utterances_count": 1 // initial entry for the counter
-            };
+            // initial entry for the counter
+            utterances_dict[user_code] = { "utterances_count": 1 };
         }
     });
     return utterances_dict;

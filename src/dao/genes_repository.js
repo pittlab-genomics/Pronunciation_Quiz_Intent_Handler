@@ -2,7 +2,9 @@ const _ = require("lodash");
 const { gene_list_top_723 } = require("./genes_top_723.js");
 const { gene_list_GENERIF_top50 } = require("./gene_list_GENERIF_top50.js");
 const { genes_CCDS_list } = require("./genes_CCDS_list.js");
-const { shuffle, groupItemsCount } = require("../common/util.js");
+const {
+    shuffle, groupItemsCount 
+} = require("../common/util.js");
 
 async function get_gene_list(gene_utterances, count, repeat) {
     // Count the number of utterances for each gene name

@@ -1,18 +1,18 @@
 {
     "env": {
-        "browser": true,
         "commonjs": true,
-        "es2020": true,
+        "es6": true,
         "node": true
     },
-    "extends": [
-        "eslint:recommended"
-    ],
+    "extends": "eslint:recommended",
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
     "parserOptions": {
-        "ecmaVersion": 11
+        "ecmaVersion": 2018
     },
     "rules": {
-        // enable additional rules
         "indent": [
             "error",
             4
@@ -33,20 +33,18 @@
             "error",
             "always"
         ],
-        // disable rules from base configurations
-        "no-console": "off",
-        "array-element-newline": [
+        "max-len": [
             "error",
             {
-                "minItems": 3
+                "code": 120,
+                "tabWidth": 4,
+                "ignorePattern": "^\\s*const\\s.+=\\s*require\\s*\\("
             }
         ],
-        "no-unused-vars": [
+        "object-curly-newline": [
             "error",
             {
-                "varsIgnorePattern": "[iI]gnored",
-                "argsIgnorePattern": "^_",
-                "caughtErrorsIgnorePattern": "^ignore"
+                "minProperties": 2
             }
         ],
         "comma-spacing": [
@@ -56,16 +54,35 @@
                 "after": true
             }
         ],
-        "arrow-spacing": [
+        "no-multi-spaces": [
             "error",
             {
-                "before": true,
-                "after": true
+                "exceptions": {
+                    "Property": true
+                }
+            }
+        ],
+        "key-spacing": [
+            "error",
+            {
+                "align": "value"
+            }
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_ignore",
+                "varsIgnorePattern": "[iI]gnore"
             }
         ],
         "object-curly-spacing": [
             "error",
-            "always"
+            "always",
+            {
+                "arraysInObjects": false,
+                "objectsInObjects": false
+            }
         ]
     }
 }
