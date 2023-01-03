@@ -95,7 +95,7 @@ functions:
   - ${file(src/dashboard/dashboard.serverless.yml)}
 
 plugins:
-  - serverless-plugin-aws-alerts
+  # - serverless-plugin-aws-alerts
   - serverless-plugin-include-dependencies
   - serverless-prune-plugin
 
