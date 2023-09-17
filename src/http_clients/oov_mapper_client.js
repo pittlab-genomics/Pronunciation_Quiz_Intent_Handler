@@ -8,8 +8,8 @@ const {
 const { sign_request } = require("../utils/sigv4_utils");
 
 
-const OOV_DEFAULT_MAX_DURATION = 8000;
-const OOV_DEFAULT_SOCKET_TIMEOUT = 3500;
+const OOV_DEFAULT_MAX_DURATION = 10000;
+const OOV_DEFAULT_SOCKET_TIMEOUT = 5000;
 const OOV_DEFAULT_INITIAL_DELAY = 200;
 
 const send_request_async = function (url, headers) {
